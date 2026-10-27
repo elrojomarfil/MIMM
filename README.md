@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora MIMM - Tarifario Oficial UF</title>
+    <style>
+        :root {
+            --primary: #1b4332;
+            --secondary: #2d6a4f;
+            --accent: #d8f3dc;
+            --bg: #f4f6f8;
+            --text: #212529;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 12px;
+        }
+        .card {
+            max-width: 100%;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        h2 {
+            color: var(--primary);
+            text-align: center;
+            font-size: 1.3rem;
+            margin-bottom: 2px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 0.8rem;
+            margin-bottom: 20px;
+        }
+        /* Sistema de pestañas */
+        .tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 20px;
+            background: #e9ecef;
+            padding: 4px;
+            border-radius: 8px;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #495057;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tab-btn.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 0.85rem;
+            color: #444;
+        }
+        select, input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            box-sizing: border-box;
+            background: #fff;
+        }
+        /* Panel informativo fijo de la UF */
+        .uf-info-box {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-left: 4px solid var(--secondary);
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+        .uf-title {
+            font-weight: bold;
+            color: var(--primary);
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        .uf-value {
+            font-size: 1.1rem;
+            color: var(--secondary);
+        }
+        .uf-explanation {
+            font-size: 0.75rem;
+            color: #555;
+            line-height: 1.4;
+            margin: 0;
+        }
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 8px;
+        }
+        .checkbox-row input {
+            width: 18px;
+            height: 18px;
+        }
+        .checkbox-row label {
+            margin-bottom: 0;
+            font-weight: normal;
+            font-size: 0.85rem;
+        }
+        button.calc-btn {
+            width: 100%;
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            padding: 12px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button.calc-btn:hover {
+            background-color: var(--primary);
+        }
+        .result {
+            margin-top: 20px;
+            background-color: var(--accent);
+            border: 1px solid #b7e4c7;
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        .result h3 {
+            margin: 0 0 5px 0;
+            color: var(--primary);
+            font-size: 0.95rem;
+        }
+        .price {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 5px 0;
+        }
+        .info {
+            font-size: 0.75rem;
+            color: #555;
+            margin-top: 8px;
+            line-height: 1.3;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.75rem;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>MIMM - Tarifario Oficial</h2>
+    <div class="subtitle">Herramienta pública indexada en Unidad Fija MIMM</div>
+
+    <!-- Panel Informativo Fijo de la Unidad Fija (No Modificable) -->
+    <div class="uf-info-box">
+        <div class="uf-title">
+            <span>📊 Valor 1 Unidad Fija (UF-MIMM):</span>
+            <span class="uf-value" id="lblValorUF">$2.903,35</span>
+        </div>
+        <p class="uf-explanation">
+            Este valor de referencia no es arbitrario: se calcula tomando la Canasta Básica Total (CBT) individual publicada mensualmente por la DEIE de Mendoza, dividida en jornadas de trabajo estándar con un coeficiente de calificación artística y técnica. Al ser una herramienta pública e institucional, el valor se encuentra blindado y se actualiza periódicamente por la comisión directiva del MIMM.
+        </p>
+    </div>
+
+    <!-- Botones de Pestañas -->
+    <div class="tabs">
+        <button class="tab-btn active" type="button" onclick="cambiarPestana('vivo')">🎸 Música en Vivo</button>
+        <button class="tab-btn" type="button" onclick="cambiarPestana('estudio')">🎼 Estudio y Docencia</button>
+    </div>
+
+    <!-- PESTAÑA 1: MÚSICA EN VIVO -->
+    <div id="pestana-vivo" class="tab-content active">
+        <div class="group">
+            <label for="rubroVivo">Seleccionar Actividad / Escala:</label>
+            <select id="rubroVivo">
+                <optgroup label="Gastronómicos / Bares (Por Músico)">
+                    <option value="gast_cat1">Bar / Pub Cat. 1 (hasta 50 pers.) - 35 UF</option>
+                    <option value="gast_cat2">Bar / Peña Cat. 2 (51 a 300 pers.) - 50 UF</option>
+                </optgroup>
+                <optgroup label="Espectáculos y Festivales (Banda Completa)">
+                    <option value="esp_sala">Salas / Teatros Independientes - 200 UF</option>
+                    <option value="esp_mun">Festivales Municipales / Al aire libre - 350 UF</option>
+                    <option value="esp_dep">Fiestas Departamentales (hasta 1.000 pers.) - 550 UF</option>
+                    <option value="esp_prov">Fiestas Provinciales / Megaeventos - 900 UF</option>
+                </optgroup>
+            </select>
+        </div>
+
+        <div class="group">
+            <label for="cantVivo" id="lblCantVivo">Cantidad de músicos integrantes en escena:</label>
+            <input type="number" id="cantVivo" value="1" min="1" max="30">
+        </div>
+
+        <div class="group">
+            <div class="checkbox-row">
+                <input type="checkbox" id="sonido">
+                <label for="sonido">Incluye Sonido / PA propio en vivo (+25%)</label>
+            </div>
+            <div class="checkbox-row">
+                <input type="checkbox" id="distancia">
+                <label for="distancia">Adicional por traslado fuera del Gran Mendoza (+20%)</label>
+            </div>
+        </div>
+
+        <button class="calc-btn" type="button" onclick="calcularVivo()">Calcular Honorario en Vivo</button>
+    </div>
+
+    <!-- PESTAÑA 2: ESTUDIO, COPISTA Y DOCENCIA -->
+    <div id="pestana-estudio" class="tab-content">
+        <div class="group">
+            <label for="rubroEstudio">Seleccionar Servicio / Rubro:</label>
+            <select id="rubroEstudio" onchange="actualizarTextoEstudio()">
+                <optgroup label="Producción y Arreglos">
+                    <option value="trans_tema">Transcripción / Copista de Partituras (Por tema) - 20 UF</option>
+                    <option value="est_sesion">Músico Sesionista / Grabación (Por tema) - 25 UF</option>
+                    <option value="arr_tema">Arreglo Musical Popular (Por obra) - 45 UF</option>
+                </optgroup>
+                <optgroup label="Docencia Musical">
+                    <option value="doc_hora">Clase Particular / Coach (Hora cátedra) - 7 UF</option>
+                </optgroup>
+            </select>
+        </div>
+
+        <div class="group">
+            <label for="cantEstudio" id="lblCantEstudio">Cantidad de temas / obras:</label>
+            <input type="number" id="cantEstudio" value="1" min="1" max="50">
+        </div>
+
+        <button class="calc-btn" type="button" onclick="calcularEstudio()">Calcular Honorario Producción/Docencia</button>
+    </div>
+
+    <!-- Resultados -->
+    <div class="result" id="cajaResultado" style="display:none;">
+        <h3>Honorario Sugerido MIMM</h3>
+        <div class="price" id="txtTotal">$0</div>
+        <div class="info" id="txtDetalle"></div>
+    </div>
+
+    <div class="footer">
+        Movimiento Independiente de Músicos de Mendoza (MIMM)
+    </div>
+</div>
+
+<script>
+    // Valor Fijo Institucional de 1 Unidad Fija MIMM (Derivado de CBT / DEIE)
+    const VALOR_UF = 2903.35;
+
+    const ufVivo = {
+        gast_cat1: 35,
+        gast_cat2: 50,
+        esp_sala: 200,
+        esp_mun: 350,
+        esp_dep: 550,
+        esp_prov: 900
+    };
+
+    const ufEstudio = {
+        trans_tema: 20,
+        est_sesion: 25,
+        arr_tema: 45,
+        doc_hora: 7
+    };
+
+    function cambiarPestana(pestana) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.getElementById('cajaResultado').style.display = 'none';
+
+        if (pestana === 'vivo') {
+            document.querySelectorAll('.tab-btn')[0].classList.add('active');
+            document.getElementById('pestana-vivo').classList.add('active');
+        } else {
+            document.querySelectorAll('.tab-btn')[1].classList.add('active');
+            document.getElementById('pestana-estudio').classList.add('active');
+        }
+    }
+
+    document.getElementById('rubroVivo').addEventListener('change', function() {
+        const val = this.value;
+        const lbl = document.getElementById('lblCantVivo');
+        if (val.startsWith('gast_')) {
+            lbl.innerText = "Cantidad de músicos integrantes en escena:";
+        } else {
+            lbl.innerText = "Cantidad de formaciones / bandas:";
+        }
+    });
+
+    function actualizarTextoEstudio() {
+        const val = document.getElementById('rubroEstudio').value;
+        const lbl = document.getElementById('lblCantEstudio');
+        if (val === 'doc_hora') {
+            lbl.innerText = "Cantidad de horas cátedra:";
+        } else {
+            lbl.innerText = "Cantidad de temas / obras:";
+        }
+    }
+
+    function calcularVivo() {
+        const rubro = document.getElementById('rubroVivo').value;
+        const cant = parseFloat(document.getElementById('cantVivo').value) || 1;
+        const conSonido = document.getElementById('sonido').checked;
+        const conDistancia = document.getElementById('distancia').checked;
+
+        let uf = ufVivo[rubro];
+        let subtotal = uf * VALOR_UF * cant;
+        let total = subtotal;
+        let extras = [];
+
+        if (conSonido) {
+            total *= 1.25;
+            extras.push("sonido propio (+25%)");
+        }
+        if (conDistancia) {
+            total *= 1.20;
+            extras.push("viáticos (+20%)");
+        }
+
+        mostrarResultado(total, uf * cant, extras);
+    }
+
+    function calcularEstudio() {
+        const rubro = document.getElementById('rubroEstudio').value;
+        const cant = parseFloat(document.getElementById('cantEstudio').value) || 1;
+
+        let uf = ufEstudio[rubro];
+        let total = uf * VALOR_UF * cant;
+
+        mostrarResultado(total, uf * cant, []);
+    }
+
+    function mostrarResultado(total, totalUf, extras) {
+        const resBox = document.getElementById('cajaResultado');
+        resBox.style.display = 'block';
+        document.getElementById('txtTotal').innerText = '$ ' + Math.round(total).toLocaleString('es-AR');
+
+        let detalle = `Equivalente a ${totalUf} UF-MIMM calculadas a $${VALOR_UF.toLocaleString('es-AR', {minimumFractionDigits: 2})} c/u (Base DEIE/CBT).`;
+        if (extras.length > 0) {
+            detalle += ` Adicionales: ${extras.join(', ')}.`;
+        }
+        document.getElementById('txtDetalle').innerText = detalle;
+    }
+</script>
+
+</body>
+</html>
