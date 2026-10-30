@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MIMM - Portal de la Comunidad Musical de Mendoza</title>
+    
+    <!-- Configuración para PWA (Aplicación Instalable) -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1b4332">
+
     <style>
         :root {
             --primary: #1b4332;
@@ -215,7 +220,7 @@
             <input type="text" id="inputBuscador" class="search-input" placeholder="🔍 Buscar por nombre, banda, instrumento o zona..." oninput="filtrarContenido()">
         </div>
 
-        <!-- Botones de Pestañas actualizados -->
+        <!-- Botones de Pestañas -->
         <div class="tabs">
             <button class="tab-btn active" type="button" onclick="cambiarPestana('trabajo')">📋 Bolsa de trabajo</button>
             <button class="tab-btn" type="button" onclick="cambiarPestana('agenda')">🎸 Agenda</button>
@@ -248,10 +253,10 @@
             </div>
         </div>
 
-        <!-- PESTAÑA 3: TARIFARIO (Incrustado desde GitHub Pages) -->
+        <!-- PESTAÑA 3: TARIFARIO (Apunta al archivo tarifario.html para evitar el bucle) -->
         <div id="pestana-tarifario" class="tab-content">
             <div style="background: white; border-radius: 8px; overflow: hidden; border: 1px solid #dee2e6;">
-                <iframe src="https://elrojomarfil.github.io/MIMM/" style="width: 100%; height: 750px; border: none;" title="Tarifario Oficial MIMM"></iframe>
+                <iframe src="tarifario.html" style="width: 100%; height: 750px; border: none;" title="Tarifario Oficial MIMM"></iframe>
             </div>
         </div>
 
@@ -323,6 +328,15 @@
     window.onload = function() {
         cargarAvisos();
     };
+
+    // Registro del Service Worker para la aplicación PWA
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js')
+                .then((reg) => console.log('Service Worker registrado con éxito', reg))
+                .catch((err) => console.log('Error al registrar Service Worker', err));
+        });
+    }
 
     function cambiarPestana(pestana) {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
