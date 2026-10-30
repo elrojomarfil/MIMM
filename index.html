@@ -3,15 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIMM - Portal de la Comunidad Musical de Mendoza</title>
     
-    <!-- ETIQUETAS DE VISTA PREVIA PARA WHATSAPP Y REDES -->
-    <meta property="og:title" content="Tarifario MIMM">
-    <meta property="og:description" content="Los valores del tarifario son de referencia sugeridos por el MIMM y construidos con la unidad de referencia.">
-    <meta property="og:image" content="https://elrojomarfil.github.io/MIMM/miniatura.png?v=7">
-    <meta property="og:url" content="https://elrojomarfil.github.io/MIMM/">
-    <meta property="og:type" content="website">
+    <!-- Configuración para PWA (Aplicación Instalable) -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1b4332">
 
-    <title>Calculadora MIMM - Tarifario Oficial UF</title>
     <style>
         :root {
             --primary: #1b4332;
@@ -19,6 +16,7 @@
             --accent: #d8f3dc;
             --bg: #f4f6f8;
             --text: #212529;
+            --card-bg: #ffffff;
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -27,22 +25,22 @@
             margin: 0;
             padding: 12px;
         }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
         .card {
-            max-width: 100%;
-            background: white;
+            background: var(--card-bg);
             padding: 20px;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
         }
-        .header-logo {
+        h2 {
+            color: var(--primary);
             text-align: center;
-            margin-bottom: 12px;
-        }
-        .header-logo img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            font-size: 1.3rem;
+            margin-bottom: 2px;
         }
         .subtitle {
             text-align: center;
@@ -50,10 +48,28 @@
             font-size: 0.8rem;
             margin-bottom: 20px;
         }
+        /* Buscador General */
+        .search-container {
+            margin-bottom: 15px;
+        }
+        .search-input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            box-sizing: border-box;
+            background: #fff;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .search-input:focus {
+            border-color: var(--secondary);
+        }
         /* Sistema de pestañas */
         .tabs {
             display: flex;
-            gap: 5px;
+            gap: 3px;
             margin-bottom: 20px;
             background: #e9ecef;
             padding: 4px;
@@ -61,15 +77,16 @@
         }
         .tab-btn {
             flex: 1;
-            padding: 10px;
+            padding: 8px 4px;
             border: none;
             background: transparent;
             font-weight: 600;
-            font-size: 0.85rem;
+            font-size: 0.7rem;
             color: #495057;
             border-radius: 6px;
             cursor: pointer;
             transition: all 0.2s;
+            text-align: center;
         }
         .tab-btn.active {
             background: white;
@@ -82,6 +99,66 @@
         .tab-content.active {
             display: block;
         }
+        /* Listado de tarjetas */
+        .listing-card {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-left: 4px solid var(--secondary);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+        .listing-card.concierto {
+            border-left-color: #d90429;
+        }
+        .listing-title {
+            font-weight: bold;
+            color: var(--primary);
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+        .listing-autor {
+            font-size: 0.8rem;
+            color: var(--secondary);
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+        .listing-meta {
+            font-size: 0.75rem;
+            color: #666;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .listing-desc {
+            font-size: 0.85rem;
+            color: #444;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+        .wa-btn {
+            display: inline-block;
+            background-color: #25d366;
+            color: white;
+            text-decoration: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        .wa-btn:hover {
+            background-color: #1ebe57;
+        }
+        .empty-state, .loading-state {
+            text-align: center;
+            padding: 30px 20px;
+            color: #666;
+            font-size: 0.9rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px dashed #ccc;
+        }
+        /* Formulario */
         .group {
             margin-bottom: 15px;
         }
@@ -92,99 +169,36 @@
             font-size: 0.85rem;
             color: #444;
         }
-        select, input {
+        select, input, textarea {
             width: 100%;
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 6px;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             box-sizing: border-box;
             background: #fff;
         }
-        /* Panel informativo fijo de la UF */
-        .uf-info-box {
-            background-color: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-left: 4px solid var(--secondary);
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 20px;
+        textarea {
+            resize: vertical;
+            height: 80px;
         }
-        .uf-title {
-            font-weight: bold;
-            color: var(--primary);
-            font-size: 0.9rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 6px;
-        }
-        .uf-value {
-            font-size: 1.1rem;
-            color: var(--secondary);
-        }
-        .uf-explanation {
-            font-size: 0.75rem;
-            color: #555;
-            line-height: 1.4;
-            margin: 0;
-        }
-        .checkbox-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-top: 8px;
-        }
-        .checkbox-row input {
-            width: 18px;
-            height: 18px;
-            flex-shrink: 0;
-        }
-        .checkbox-row label {
-            margin-bottom: 0;
-            font-weight: normal;
-            font-size: 0.82rem;
-            line-height: 1.3;
-        }
-        button.calc-btn {
+        button.action-btn {
             width: 100%;
             background-color: var(--secondary);
             color: white;
             border: none;
             padding: 12px;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: bold;
             border-radius: 6px;
             cursor: pointer;
-            margin-top: 10px;
         }
-        button.calc-btn:hover {
+        button.action-btn:hover {
             background-color: var(--primary);
         }
-        .result {
-            margin-top: 20px;
-            background-color: var(--accent);
-            border: 1px solid #b7e4c7;
-            padding: 15px;
-            border-radius: 6px;
-            text-align: center;
-        }
-        .result h3 {
-            margin: 0 0 5px 0;
-            color: var(--primary);
-            font-size: 0.95rem;
-        }
-        .price {
-            font-size: 1.6rem;
-            font-weight: bold;
-            color: var(--primary);
-            margin: 5px 0;
-        }
-        .info {
-            font-size: 0.75rem;
-            color: #555;
-            margin-top: 8px;
-            line-height: 1.3;
+        button.action-btn:disabled {
+            background-color: #94d2bd;
+            cursor: not-allowed;
         }
         .footer {
             text-align: center;
@@ -196,200 +210,323 @@
 </head>
 <body>
 
-<div class="card">
-    <!-- Imagen institucional en el encabezado -->
-    <div class="header-logo">
-        <img src="miniatura.png" alt="MIMM - Tarifario Oficial">
-    </div>
-    <div class="subtitle">Herramienta pública indexada en Unidad Fija MIMM</div>
+<div class="container">
+    <div class="card">
+        <h2>MIMM - Comunidad Musical</h2>
+        <div class="subtitle">Bolsa de trabajo y agenda de conciertos en Mendoza</div>
 
-    <!-- Panel Informativo Fijo de la Unidad Fija (No Modificable) -->
-    <div class="uf-info-box">
-        <div class="uf-title">
-            <span>📊 Valor 1 Unidad Fija (UF-MIMM):</span>
-            <span class="uf-value" id="lblValorUF">$2.903,35</span>
-        </div>
-        <p class="uf-explanation">
-            Este valor de referencia no es arbitrario: se calcula tomando la Canasta Básica Total (CBT) individual publicada mensualmente por la DEIE de Mendoza, dividida en jornadas de trabajo estándar con un coeficiente de calificación artística y técnica. Al ser una herramienta pública e institucional, el valor se encuentra blindado y se actualiza periódicamente por la comisión directiva del MIMM. Todos los valores de referencia sugeridos son un piso mínimo; en ningún caso la referencia debe ser leída como techo.
-        </p>
-    </div>
-
-    <!-- Botones de Pestañas -->
-    <div class="tabs">
-        <button class="tab-btn active" type="button" onclick="cambiarPestana('vivo')">🎸 Música en Vivo</button>
-        <button class="tab-btn" type="button" onclick="cambiarPestana('estudio')">🎼 Trabajos no escénicos</button>
-    </div>
-
-    <!-- PESTAÑA 1: MÚSICA EN VIVO -->
-    <div id="pestana-vivo" class="tab-content active">
-        <div class="group">
-            <label for="rubroVivo">Seleccionar Actividad / Escala:</label>
-            <select id="rubroVivo">
-                <optgroup label="Gastronómicos / Bares (Por Músico)">
-                    <option value="gast_cat1">Bar / Pub Cat. 1 (hasta 50 pers.) - 35 UF</option>
-                    <option value="gast_cat2">Bar / Peña Cat. 2 (51 a 300 pers.) - 50 UF</option>
-                </optgroup>
-                <optgroup label="Espectáculos y Festivales (Banda Completa)">
-                    <option value="esp_sala">Salas / Teatros Independientes - 200 UF</option>
-                    <option value="esp_mun">Festivales Municipales / Al aire libre - 350 UF</option>
-                    <option value="esp_dep">Fiestas Departamentales (hasta 1.000 pers.) - 550 UF</option>
-                    <option value="esp_prov">Fiestas Provinciales / Megaeventos - 900 UF</option>
-                </optgroup>
-            </select>
+        <!-- Buscador General (Se oculta en Tarifario y Publicar) -->
+        <div class="search-container" id="buscadorContainer">
+            <input type="text" id="inputBuscador" class="search-input" placeholder="🔍 Buscar por nombre, banda, instrumento o zona..." oninput="filtrarContenido()">
         </div>
 
-        <div class="group">
-            <label for="cantVivo" id="lblCantVivo">Cantidad de músicos integrantes en escena:</label>
-            <input type="number" id="cantVivo" value="1" min="1" max="30">
+        <!-- Botones de Pestañas -->
+        <div class="tabs">
+            <button class="tab-btn active" type="button" onclick="cambiarPestana('trabajo')">📋 Bolsa de trabajo</button>
+            <button class="tab-btn" type="button" onclick="cambiarPestana('agenda')">🎸 Agenda</button>
+            <button class="tab-btn" type="button" onclick="cambiarPestana('tarifario')">💰 Tarifario</button>
+            <button class="tab-btn" type="button" onclick="cambiarPestana('publicar')">➕ Publicar</button>
         </div>
 
-        <div class="group">
-            <div class="checkbox-row">
-                <input type="checkbox" id="sonido">
-                <label for="sonido">Incluye Sonido / PA propio en vivo (+25%)</label>
+        <!-- PESTAÑA 1: BOLSA DE TRABAJO -->
+        <div id="pestana-trabajo" class="tab-content active">
+            <div class="group">
+                <label for="filtroCategoriaTrabajo">Filtrar categoría laboral:</label>
+                <select id="filtroCategoriaTrabajo" onchange="filtrarContenido()">
+                    <option value="todos">Todas las categorías</option>
+                    <option value="banda">Buscan Músico / Integrante</option>
+                    <option value="sesionista">Sesionistas y Grabación</option>
+                    <option value="tecnico">Técnicos / Sonido / Iluminación</option>
+                    <option value="ofrezco">Ofrezco Servicios / Clases</option>
+                </select>
             </div>
-            <div class="checkbox-row">
-                <input type="checkbox" id="distancia">
-                <label for="distancia">Adicional por traslado radio superior a 30km (interurbano) (+20%)</label>
+
+            <div id="contenedorTrabajos">
+                <div class="loading-state">🔄 Conectando con la base de datos del MIMM...</div>
             </div>
         </div>
 
-        <button class="calc-btn" type="button" onclick="calcularVivo()">Calcular Honorario en Vivo</button>
-    </div>
-
-    <!-- PESTAÑA 2: TRABAJOS NO ESCÉNICOS -->
-    <div id="pestana-estudio" class="tab-content">
-        <div class="group">
-            <label for="rubroEstudio">Seleccionar Servicio / Rubro:</label>
-            <select id="rubroEstudio" onchange="actualizarTextoEstudio()">
-                <optgroup label="Producción y Arreglos">
-                    <option value="trans_tema">Transcripción / Copista de Partituras (Por tema) - 20 UF</option>
-                    <option value="est_sesion">Músico Sesionista / Grabación (Por tema) - 25 UF</option>
-                    <option value="arr_tema">Arreglo Musical (Por obra) - 45 UF</option>
-                </optgroup>
-                <optgroup label="Docencia Musical">
-                    <option value="doc_hora">Clase Particular / Coach (Hora cátedra) - 7 UF</option>
-                </optgroup>
-            </select>
+        <!-- PESTAÑA 2: AGENDA DE CONCIERTOS -->
+        <div id="pestana-agenda" class="tab-content">
+            <div id="contenedorAgenda">
+                <div class="loading-state">🔄 Cargando agenda de conciertos...</div>
+            </div>
         </div>
 
-        <div class="group">
-            <label for="cantEstudio" id="lblCantEstudio">Cantidad de temas / obras:</label>
-            <input type="number" id="cantEstudio" value="1" min="1" max="50">
+        <!-- PESTAÑA 3: TARIFARIO (Incrustado desde GitHub Pages) -->
+        <div id="pestana-tarifario" class="tab-content">
+            <div style="background: white; border-radius: 8px; overflow: hidden; border: 1px solid #dee2e6;">
+                <iframe src="https://elrojomarfil.github.io/MIMM/" style="width: 100%; height: 750px; border: none;" title="Tarifario Oficial MIMM"></iframe>
+            </div>
         </div>
 
-        <button class="calc-btn" type="button" onclick="calcularEstudio()">Calcular Honorario Trabajos no escénicos</button>
-    </div>
+        <!-- PESTAÑA 4: PUBLICAR AVISO O CONCIERTO -->
+        <div id="pestana-publicar" class="tab-content">
+            <form id="formAviso" onsubmit="publicarAviso(event)">
+                <div class="group">
+                    <label for="tipoPublicacion">¿Qué querés publicar?:</label>
+                    <select id="tipoPublicacion" onchange="actualizarFormulario()" required>
+                        <option value="trabajo">Bolsa de Trabajo / Servicio</option>
+                        <option value="concierto">Concierto / Evento en Vivo</option>
+                    </select>
+                </div>
 
-    <!-- Resultados -->
-    <div class="result" id="cajaResultado" style="display:none;">
-        <h3>Honorario Sugerido MIMM</h3>
-        <div class="price" id="txtTotal">$0</div>
-        <div class="info" id="txtDetalle"></div>
-    </div>
+                <div class="group">
+                    <label for="autorAviso">Tu Nombre / Artista o Banda:</label>
+                    <input type="text" id="autorAviso" placeholder="Ej: Juan Pérez / Trío Los Cumpas" required>
+                </div>
 
-    <div class="footer">
-        Movimiento Independiente de Músicos de Mendoza (MIMM)
+                <div class="group">
+                    <label id="labelTitulo" for="tituloAviso">Título del aviso:</label>
+                    <input type="text" id="tituloAviso" placeholder="Ej: Busco bajista / Presentación de disco" required>
+                </div>
+
+                <div class="group" id="grupoCatTrabajo">
+                    <label for="tipoCat">Categoría laboral:</label>
+                    <select id="tipoCat">
+                        <option value="banda">Buscan Músico / Integrante</option>
+                        <option value="sesionista">Sesionistas y Grabación</option>
+                        <option value="tecnico">Técnicos / Sonido / Iluminación</option>
+                        <option value="ofrezco">Ofrezco Servicios / Clases</option>
+                    </select>
+                </div>
+
+                <div class="group" id="grupoFechaEvento" style="display: none;">
+                    <label for="fechaEvento">Fecha y Hora del Concierto:</label>
+                    <input type="text" id="fechaEvento" placeholder="Ej: Viernes 15/11 - 21:30 hs">
+                </div>
+
+                <div class="group">
+                    <label id="labelZona" for="zonaAviso">Zona / Local / Departamento:</label>
+                    <input type="text" id="zonaAviso" placeholder="Ej: Bar Cultural / Gran Mendoza" required>
+                </div>
+
+                <div class="group">
+                    <label for="descAviso">Descripción y detalles:</label>
+                    <textarea id="descAviso" placeholder="Detallá costos, entradas, requisitos o condiciones..." required></textarea>
+                </div>
+
+                <div class="group">
+                    <label for="telAviso">Número de WhatsApp de contacto (sin 0 ni 15):</label>
+                    <input type="text" id="telAviso" placeholder="Ej: 5492611234567" required>
+                </div>
+
+                <button class="action-btn" type="submit" id="btnEnviar">Publicar en la Red</button>
+            </form>
+        </div>
+
+        <div class="footer">
+            Movimiento Independiente de Músicos de Mendoza (MIMM)
+        </div>
     </div>
 </div>
 
 <script>
-    // Valor Fijo Institucional de 1 Unidad Fija MIMM (Derivado de CBT / DEIE)
-    const VALOR_UF = 2903.35;
+    const API_URL = "https://script.google.com/macros/s/AKfycbzCpYNJSTtjqkPfQkBm0HkVyfllk-eMnKjY5_pPCswHs-AcRVQY_qVdxHK5AVMa1vFZNQ/exec";
+    let listaGlobalAvisos = [];
 
-    const ufVivo = {
-        gast_cat1: 35,
-        gast_cat2: 50,
-        esp_sala: 200,
-        esp_mun: 350,
-        esp_dep: 550,
-        esp_prov: 900
+    window.onload = function() {
+        cargarAvisos();
     };
 
-    const ufEstudio = {
-        trans_tema: 20,
-        est_sesion: 25,
-        arr_tema: 45,
-        doc_hora: 7
-    };
+    // Registro del Service Worker para la aplicación PWA
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js')
+                .then((reg) => console.log('Service Worker registrado con éxito', reg))
+                .catch((err) => console.log('Error al registrar Service Worker', err));
+        });
+    }
 
     function cambiarPestana(pestana) {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-        document.getElementById('cajaResultado').style.display = 'none';
 
-        if (pestana === 'vivo') {
+        const buscador = document.getElementById('buscadorContainer');
+        if (pestana === 'tarifario' || pestana === 'publicar') {
+            buscador.style.display = 'none';
+        } else {
+            buscador.style.display = 'block';
+        }
+
+        if (pestana === 'trabajo') {
             document.querySelectorAll('.tab-btn')[0].classList.add('active');
-            document.getElementById('pestana-vivo').classList.add('active');
-        } else {
+            document.getElementById('pestana-trabajo').classList.add('active');
+        } else if (pestana === 'agenda') {
             document.querySelectorAll('.tab-btn')[1].classList.add('active');
-            document.getElementById('pestana-estudio').classList.add('active');
-        }
-    }
-
-    document.getElementById('rubroVivo').addEventListener('change', function() {
-        const val = this.value;
-        const lbl = document.getElementById('lblCantVivo');
-        if (val.startsWith('gast_')) {
-            lbl.innerText = "Cantidad de músicos integrantes en escena:";
+            document.getElementById('pestana-agenda').classList.add('active');
+        } else if (pestana === 'tarifario') {
+            document.querySelectorAll('.tab-btn')[2].classList.add('active');
+            document.getElementById('pestana-tarifario').classList.add('active');
         } else {
-            lbl.innerText = "Cantidad de formaciones / bandas:";
+            document.querySelectorAll('.tab-btn')[3].classList.add('active');
+            document.getElementById('pestana-publicar').classList.add('active');
         }
-    });
+    }
 
-    function actualizarTextoEstudio() {
-        const val = document.getElementById('rubroEstudio').value;
-        const lbl = document.getElementById('lblCantEstudio');
-        if (val === 'doc_hora') {
-            lbl.innerText = "Cantidad de horas cátedra:";
+    function actualizarFormulario() {
+        const tipo = document.getElementById('tipoPublicacion').value;
+        const grupoCat = document.getElementById('grupoCatTrabajo');
+        const grupoFecha = document.getElementById('grupoFechaEvento');
+        const labelTitulo = document.getElementById('labelTitulo');
+        const labelZona = document.getElementById('labelZona');
+
+        if (tipo === 'concierto') {
+            grupoCat.style.display = 'none';
+            grupoFecha.style.display = 'block';
+            labelTitulo.innerText = "Nombre del Evento / Concierto:";
+            labelZona.innerText = "Lugar / Bar / Sala y Zona:";
         } else {
-            lbl.innerText = "Cantidad de temas / obras:";
+            grupoCat.style.display = 'block';
+            grupoFecha.style.display = 'none';
+            labelTitulo.innerText = "Título del aviso:";
+            labelZona.innerText = "Zona / Departamento:";
         }
     }
 
-    function calcularVivo() {
-        const rubro = document.getElementById('rubroVivo').value;
-        const cant = parseFloat(document.getElementById('cantVivo').value) || 1;
-        const conSonido = document.getElementById('sonido').checked;
-        const conDistancia = document.getElementById('distancia').checked;
-
-        let uf = ufVivo[rubro];
-        let subtotal = uf * VALOR_UF * cant;
-        let total = subtotal;
-        let extras = [];
-
-        if (conSonido) {
-            total *= 1.25;
-            extras.push("sonido propio (+25%)");
-        }
-        if (conDistancia) {
-            total *= 1.20;
-            extras.push("viáticos/traslado interurbano (+20%)");
-        }
-
-        mostrarResultado(total, uf * cant, extras);
+    function cargarAvisos() {
+        const contTrabajos = document.getElementById('contenedorTrabajos');
+        const contAgenda = document.getElementById('contenedorAgenda');
+        
+        fetch(API_URL)
+            .then(response => response.json())
+            .then(data => {
+                listaGlobalAvisos = data.reverse();
+                renderizarListados(listaGlobalAvisos);
+            })
+            .catch(error => {
+                console.error("Error al cargar:", error);
+                contTrabajos.innerHTML = `<div class="empty-state" style="color: #d90429;">⚠️ No se pudieron cargar los avisos. Intentá más tarde.</div>`;
+                contAgenda.innerHTML = `<div class="empty-state" style="color: #d90429;">⚠️ No se pudo cargar la agenda.</div>`;
+            });
     }
 
-    function calcularEstudio() {
-        const rubro = document.getElementById('rubroEstudio').value;
-        const cant = parseFloat(document.getElementById('cantEstudio').value) || 1;
+    function renderizarListados(datos) {
+        const contTrabajos = document.getElementById('contenedorTrabajos');
+        const contAgenda = document.getElementById('contenedorAgenda');
 
-        let uf = ufEstudio[rubro];
-        let total = uf * VALOR_UF * cant;
+        contTrabajos.innerHTML = "";
+        contAgenda.innerHTML = "";
 
-        mostrarResultado(total, uf * cant, []);
+        let hayTrabajos = false;
+        let hayConciertos = false;
+
+        datos.forEach(item => {
+            const esConcierto = item.categoria === 'concierto';
+            
+            const card = document.createElement('div');
+            card.className = esConcierto ? 'listing-card concierto' : 'listing-card';
+            card.setAttribute('data-cat', item.categoria || 'trabajo');
+            card.setAttribute('data-texto', `${item.autor || ''} ${item.titulo} ${item.zona} ${item.descripcion}`.toLowerCase());
+
+            let fechaFormateada = "Reciente";
+            if (item.fecha) {
+                const d = new Date(item.fecha);
+                if (!isNaN(d)) fechaFormateada = d.toLocaleDateString('es-AR');
+            }
+
+            const autorTexto = (item.autor && item.autor.trim() !== "" && item.autor !== "Anónimo") ? `👤 Publicado por: ${item.autor}` : `👤 Publicado por: Comunidad MIMM`;
+            const mensajeWa = encodeURIComponent(`Hola ${item.autor || 'colega'}, me interesa tu publicación "${item.titulo}" vista en el MIMM.`);
+
+            let extraInfo = esConcierto && item.fechaEvento ? `<div style="font-size:0.8rem; color:#d90429; font-weight:bold; margin-bottom:4px;">📅 Fecha: ${item.fechaEvento}</div>` : '';
+
+            card.innerHTML = `
+                <div class="listing-title">${item.titulo}</div>
+                <div class="listing-autor">${autorTexto}</div>
+                ${extraInfo}
+                <div class="listing-meta">
+                    <span>📍 ${item.zona}</span>
+                    <span>${fechaFormateada}</span>
+                </div>
+                <div class="listing-desc">${item.descripcion}</div>
+                <a href="https://wa.me/${item.whatsapp}?text=${mensajeWa}" class="wa-btn" target="_blank">💬 Contactar por WhatsApp</a>
+            `;
+
+            if (esConcierto) {
+                contAgenda.appendChild(card);
+                hayConciertos = true;
+            } else {
+                contTrabajos.appendChild(card);
+                hayTrabajos = true;
+            }
+        });
+
+        if (!hayTrabajos) {
+            contTrabajos.innerHTML = `<div class="empty-state">📭 No hay avisos laborales publicados en esta categoría.</div>`;
+        }
+        if (!hayConciertos) {
+            contAgenda.innerHTML = `<div class="empty-state">🎸 No hay conciertos agendados por el momento.<br>¡Publicá el tuyo desde la pestaña Publicar!</div>`;
+        }
+
+        filtrarContenido();
     }
 
-    function mostrarResultado(total, totalUf, extras) {
-        const resBox = document.getElementById('cajaResultado');
-        resBox.style.display = 'block';
-        document.getElementById('txtTotal').innerText = '$ ' + Math.round(total).toLocaleString('es-AR');
+    function filtrarContenido() {
+        const textoBusqueda = document.getElementById('inputBuscador').value.toLowerCase();
+        const categoriaTrabajo = document.getElementById('filtroCategoriaTrabajo').value;
+        const tarjetas = document.querySelectorAll('.listing-card');
 
-        let detalle = `Equivalente a ${totalUf} UF-MIMM calculadas a $${VALOR_UF.toLocaleString('es-AR', {minimumFractionDigits: 2})} c/u (Base DEIE/CBT).`;
-        if (extras.length > 0) {
-            detalle += ` Adicionales: ${extras.join(', ')}.`;
-        }
-        document.getElementById('txtDetalle').innerText = detalle;
+        tarjetas.forEach(card => {
+            const cat = card.getAttribute('data-cat');
+            const textoCard = card.getAttribute('data-texto');
+            if(!textoCard) return;
+            
+            const coincideTexto = textoCard.includes(textoBusqueda);
+            
+            if (cat === 'concierto') {
+                card.style.display = coincideTexto ? 'block' : 'none';
+            } else {
+                const coincideCat = (categoriaTrabajo === 'todos' || cat === categoriaTrabajo);
+                card.style.display = (coincideCat && coincideTexto) ? 'block' : 'none';
+            }
+        });
+    }
+
+    function publicarAviso(event) {
+        event.preventDefault();
+
+        const btnEnviar = document.getElementById('btnEnviar');
+        btnEnviar.disabled = true;
+        btnEnviar.innerText = "Publicando...";
+
+        const tipo = document.getElementById('tipoPublicacion').value;
+        
+        const datos = {
+            autor: document.getElementById('autorAviso').value,
+            titulo: document.getElementById('tituloAviso').value,
+            categoria: tipo === 'concierto' ? 'concierto' : document.getElementById('tipoCat').value,
+            zona: document.getElementById('zonaAviso').value,
+            descripcion: document.getElementById('descAviso').value,
+            whatsapp: document.getElementById('telAviso').value,
+            fechaEvento: tipo === 'concierto' ? document.getElementById('fechaEvento').value : ''
+        };
+
+        fetch(API_URL, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(datos)
+        })
+        .then(() => {
+            alert('¡Publicación realizada con éxito en la red del MIMM!');
+            document.getElementById('formAviso').reset();
+            btnEnviar.disabled = false;
+            btnEnviar.innerText = "Publicar en la Red";
+            
+            if (tipo === 'concierto') {
+                cambiarPestana('agenda');
+            } else {
+                cambiarPestana('trabajo');
+            }
+            
+            setTimeout(cargarAvisos, 1500);
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            alert('Hubo un error al publicar. Verificá tu conexión.');
+            btnEnviar.disabled = false;
+            btnEnviar.innerText = "Publicar en la Red";
+        });
     }
 </script>
 
