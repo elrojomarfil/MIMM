@@ -5,140 +5,93 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MIMM - Portal de la Comunidad Musical de Mendoza</title>
     
-    <meta property="og:title" content="MIMM - Portal Oficial">
-    <meta property="og:description" content="Portal unificado de la Comunidad Musical de Mendoza: Tarifario UF, Facturación, Bolsa de Trabajo y Agenda.">
-    <meta property="og:image" content="https://elrojomarfil.github.io/MIMM/miniatura.png?v=7">
-    <meta property="og:url" content="https://elrojomarfil.github.io/MIMM/">
-    <meta property="og:type" content="website">
-
+    <!-- Configuración para PWA (Aplicación Instalable) -->
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#09090b">
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@500;600;700&display=swap" rel="stylesheet">
+    <meta name="theme-color" content="#1b4332">
 
     <style>
         :root {
-            --bg-deep: #09090b;
-            --card-bg: rgba(24, 24, 27, 0.75);
-            --card-border: rgba(255, 255, 255, 0.1);
-            --primary-red: #ef4444;
-            --hover-red: #dc2626;
-            --accent-yellow: #facc15;
-            --text-light: #f4f4f5;
-            --text-muted: #a1a1aa;
-            --input-bg: rgba(9, 9, 11, 0.6);
-            --radius: 16px;
+            --primary: #1b4332;
+            --secondary: #2d6a4f;
+            --accent: #d8f3dc;
+            --bg: #f4f6f8;
+            --text: #212529;
+            --card-bg: #ffffff;
         }
-
         body {
-            font-family: 'Urbanist', sans-serif, system-ui;
-            background-color: var(--bg-deep);
-            background-image: 
-                radial-gradient(circle at 10% 20%, rgba(239, 68, 68, 0.12) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(250, 204, 21, 0.08) 0%, transparent 40%);
-            color: var(--text-light);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
             margin: 0;
-            padding: 16px;
-            min-height: 100vh;
-            -webkit-font-smoothing: antialiased;
+            padding: 12px;
         }
-
         .container {
-            max-width: 650px;
+            max-width: 600px;
             margin: 0 auto;
         }
-
         .card {
             background: var(--card-bg);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--card-border);
-            padding: 24px;
-            border-radius: var(--radius);
-            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
             margin-bottom: 20px;
         }
-
-        .header-logo {
-            text-align: center;
-            margin-bottom: 12px;
-        }
-        .header-logo img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
         h2 {
-            color: var(--accent-yellow);
+            color: var(--primary);
             text-align: center;
-            font-size: 1.6rem;
-            font-weight: 700;
+            font-size: 1.3rem;
             margin-bottom: 2px;
-            letter-spacing: -0.5px;
         }
-
         .subtitle {
             text-align: center;
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            margin-bottom: 22px;
+            color: #666;
+            font-size: 0.8rem;
+            margin-bottom: 20px;
         }
-
+        /* Buscador General */
         .search-container {
-            margin-bottom: 18px;
+            margin-bottom: 15px;
         }
         .search-input {
             width: 100%;
-            padding: 12px 14px;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 10px;
-            font-size: 15px;
-            font-family: 'Urbanist', sans-serif;
+            padding: 10px 14px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 0.9rem;
             box-sizing: border-box;
-            background: var(--input-bg);
-            color: var(--text-light);
+            background: #fff;
             outline: none;
-            transition: border-color 0.2s, box-shadow 0.2s;
+            transition: border-color 0.2s;
         }
         .search-input:focus {
-            border-color: var(--accent-yellow);
-            box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.2);
+            border-color: var(--secondary);
         }
-
+        /* Sistema de pestañas */
         .tabs {
             display: flex;
-            gap: 4px;
+            gap: 3px;
             margin-bottom: 20px;
-            background: rgba(0, 0, 0, 0.4);
-            padding: 5px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            flex-wrap: wrap;
+            background: #e9ecef;
+            padding: 4px;
+            border-radius: 8px;
         }
         .tab-btn {
             flex: 1;
-            min-width: 75px;
-            padding: 10px 4px;
+            padding: 8px 4px;
             border: none;
             background: transparent;
-            font-weight: 700;
-            font-size: 0.72rem;
-            font-family: 'Urbanist', sans-serif;
-            color: var(--text-muted);
-            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.7rem;
+            color: #495057;
+            border-radius: 6px;
             cursor: pointer;
             transition: all 0.2s;
             text-align: center;
         }
         .tab-btn.active {
-            background: var(--primary-red);
-            color: white;
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
         .tab-content {
             display: none;
@@ -146,356 +99,137 @@
         .tab-content.active {
             display: block;
         }
-
-        .uf-info-box {
-            background-color: rgba(9, 9, 11, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-left: 5px solid var(--accent-yellow);
-            padding: 16px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-        .uf-title {
-            font-weight: 700;
-            color: var(--accent-yellow);
-            font-size: 0.95rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-        .uf-value {
-            font-size: 1.2rem;
-            color: #86efac;
-        }
-        .uf-explanation {
-            font-size: 0.82rem;
-            color: var(--text-muted);
-            line-height: 1.5;
-            margin: 0;
-        }
-
-        .checkbox-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        .checkbox-row input {
-            width: 20px;
-            height: 20px;
-            accent-color: var(--primary-red);
-        }
-        .checkbox-row label {
-            margin-bottom: 0;
-            font-size: 0.9rem;
-            color: var(--text-light);
-        }
-
-        .result {
-            margin-top: 22px;
-            background-color: rgba(250, 204, 21, 0.1);
-            border: 1px solid rgba(250, 204, 21, 0.3);
-            padding: 18px;
-            border-radius: 10px;
-            text-align: center;
-        }
-        .result h3 {
-            margin: 0 0 6px 0;
-            color: var(--accent-yellow);
-            font-size: 1.05rem;
-        }
-        .price {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--accent-yellow);
-            margin: 6px 0;
-        }
-        .info {
-            font-size: 0.82rem;
-            color: var(--text-muted);
-            margin-top: 10px;
-        }
-
+        /* Listado de tarjetas */
         .listing-card {
-            background: rgba(9, 9, 11, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-left: 5px solid var(--accent-yellow);
-            padding: 18px;
-            border-radius: 10px;
-            margin-bottom: 14px;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-left: 4px solid var(--secondary);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 12px;
         }
         .listing-card.concierto {
-            border-left-color: var(--primary-red);
+            border-left-color: #d90429;
         }
         .listing-title {
-            font-weight: 700;
-            color: var(--accent-yellow);
-            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--primary);
+            font-size: 1rem;
             margin-bottom: 4px;
         }
         .listing-autor {
-            font-size: 0.85rem;
-            color: #fca5a5;
-            font-weight: 700;
+            font-size: 0.8rem;
+            color: var(--secondary);
+            font-weight: bold;
             margin-bottom: 6px;
         }
         .listing-meta {
-            font-size: 0.8rem;
-            color: var(--text-muted);
+            font-size: 0.75rem;
+            color: #666;
             margin-bottom: 8px;
             display: flex;
             justify-content: space-between;
         }
         .listing-desc {
-            font-size: 0.9rem;
-            color: var(--text-light);
-            margin-bottom: 14px;
-            line-height: 1.5;
+            font-size: 0.85rem;
+            color: #444;
+            margin-bottom: 12px;
+            line-height: 1.4;
         }
         .wa-btn {
             display: inline-block;
             background-color: #25d366;
             color: white;
             text-decoration: none;
-            padding: 8px 14px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            font-weight: 700;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        .wa-btn:hover {
+            background-color: #1ebe57;
         }
         .empty-state, .loading-state {
             text-align: center;
             padding: 30px 20px;
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            background: rgba(9, 9, 11, 0.4);
-            border-radius: 10px;
-            border: 1px dashed rgba(255, 255, 255, 0.15);
+            color: #666;
+            font-size: 0.9rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px dashed #ccc;
         }
-
+        /* Formulario */
         .group {
-            margin-bottom: 18px;
+            margin-bottom: 15px;
         }
         label {
             display: block;
             font-weight: 600;
-            margin-bottom: 8px;
-            font-size: 15px;
-            color: var(--text-light);
+            margin-bottom: 5px;
+            font-size: 0.85rem;
+            color: #444;
         }
         select, input, textarea {
             width: 100%;
-            padding: 14px;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 10px;
-            font-size: 15px;
-            font-family: 'Urbanist', sans-serif;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 0.9rem;
             box-sizing: border-box;
-            background: var(--input-bg);
-            color: var(--text-light);
-        }
-        select option {
-            background: #18181b;
-            color: #f4f4f5;
+            background: #fff;
         }
         textarea {
             resize: vertical;
-            height: 90px;
+            height: 80px;
         }
-        button.calc-btn, button.action-btn {
+        button.action-btn {
             width: 100%;
-            background-color: var(--primary-red);
+            background-color: var(--secondary);
             color: white;
             border: none;
-            padding: 14px 20px;
-            font-size: 16px;
-            font-weight: 700;
-            font-family: 'Urbanist', sans-serif;
-            border-radius: 10px;
+            padding: 12px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            border-radius: 6px;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-            margin-top: 10px;
         }
-        button:disabled {
-            background-color: #52525b;
+        button.action-btn:hover {
+            background-color: var(--primary);
+        }
+        button.action-btn:disabled {
+            background-color: #94d2bd;
             cursor: not-allowed;
         }
-        h3 {
-            color: var(--accent-yellow);
-            font-size: 1.35rem;
-            font-weight: 700;
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.75rem;
+            color: #888;
         }
-        .btn-secondary {
-            background-color: #27272a !important;
-            border: 1px solid rgba(255, 255, 255, 0.1) !important;
-            color: var(--text-light) !important;
-        }
-        .btn-warning-action {
-            background-color: var(--accent-yellow) !important;
-            color: #09090b !important;
-            font-weight: 700 !important;
-        }
-        .alert {
-            padding: 14px;
-            background-color: rgba(239, 68, 68, 0.15);
-            color: #fca5a5;
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            border-radius: 10px;
-            margin-bottom: 18px;
-        }
-        .history-card {
-            background: rgba(9, 9, 11, 0.5);
-            padding: 18px;
-            border-radius: 10px;
-            margin-bottom: 14px;
-            border-left: 5px solid var(--accent-yellow);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        .badge-pendiente { color: #fef08a; background: rgba(250, 204, 21, 0.15); padding: 4px 10px; border-radius: 6px; font-weight: 700; }
-        .badge-emitida { color: #86efac; background: rgba(34, 197, 94, 0.15); padding: 4px 10px; border-radius: 6px; font-weight: 700; }
-        .footer { text-align: center; margin-top: 25px; font-size: 0.8rem; color: var(--text-muted); }
-        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="card">
-        <div class="header-logo">
-            <img src="miniatura.png" alt="MIMM - Tarifario Oficial">
-        </div>
         <h2>MIMM - Comunidad Musical</h2>
-        <div class="subtitle">Portal unificado de gestión, tarifario oficial y agenda de Mendoza</div>
+        <div class="subtitle">Bolsa de trabajo y agenda de conciertos en Mendoza</div>
 
-        <div class="search-container" id="buscadorContainer" style="display: none;">
+        <!-- Buscador General (Se oculta en Tarifario y Publicar) -->
+        <div class="search-container" id="buscadorContainer">
             <input type="text" id="inputBuscador" class="search-input" placeholder="🔍 Buscar por nombre, banda, instrumento o zona..." oninput="filtrarContenido()">
         </div>
 
+        <!-- Botones de Pestañas -->
         <div class="tabs">
-            <button class="tab-btn active" type="button" onclick="cambiarPestanaPortal('tarifario')">💰 Tarifario</button>
-            <button class="tab-btn" type="button" onclick="cambiarPestanaPortal('facturacion')">🧾 Facturación</button>
-            <button class="tab-btn" type="button" onclick="cambiarPestanaPortal('trabajo')">📋 Bolsa de trabajo y avisos</button>
-            <button class="tab-btn" type="button" onclick="cambiarPestanaPortal('agenda')">🎸 Agenda de conciertos</button>
-            <button class="tab-btn" type="button" onclick="cambiarPestanaPortal('publicar')">➕ Publicar</button>
+            <button class="tab-btn active" type="button" onclick="cambiarPestana('trabajo')">📋 Bolsa de trabajo</button>
+            <button class="tab-btn" type="button" onclick="cambiarPestana('agenda')">🎸 Agenda</button>
+            <button class="tab-btn" type="button" onclick="cambiarPestana('tarifario')">💰 Tarifario</button>
+            <button class="tab-btn" type="button" onclick="cambiarPestana('publicar')">➕ Publicar</button>
         </div>
 
-        <!-- PESTAÑA 1: TARIFARIO -->
-        <div id="pestana-tarifario" class="tab-content active">
-            <div class="uf-info-box">
-                <div class="uf-title">
-                    <span>📊 Valor 1 Unidad Fija (UF-MIMM):</span>
-                    <span class="uf-value" id="lblValorUF">$2.903,35</span>
-                </div>
-                <p class="uf-explanation">
-                    Este valor de referencia se calcula tomando la Canasta Básica Total (CBT) individual de la DEIE de Mendoza. Todos los valores sugeridos son un piso mínimo.
-                </p>
-            </div>
-
-            <div class="tabs" style="margin-bottom: 15px;">
-                <button class="tab-btn active" type="button" id="btnSubVivo" onclick="cambiarPestanaTarifario('vivo')">🎸 Música en Vivo</button>
-                <button class="tab-btn" type="button" id="btnSubEstudio" onclick="cambiarPestanaTarifario('estudio')">🎼 Trabajos no escénicos</button>
-            </div>
-
-            <div id="subpestana-vivo" class="tab-content active">
-                <div class="group">
-                    <label for="rubroVivo">Seleccionar Actividad / Escala:</label>
-                    <select id="rubroVivo">
-                        <optgroup label="Gastronómicos / Bares (Por Músico)">
-                            <option value="gast_cat1">Bar / Pub Cat. 1 (hasta 50 pers.) - 35 UF</option>
-                            <option value="gast_cat2">Bar / Peña Cat. 2 (51 a 300 pers.) - 50 UF</option>
-                        </optgroup>
-                        <optgroup label="Espectáculos y Festivales (Banda Completa)">
-                            <option value="esp_sala">Salas / Teatros Independientes - 200 UF</option>
-                            <option value="esp_mun">Festivales Municipales / Al aire libre - 350 UF</option>
-                            <option value="esp_dep">Fiestas Departamentales (hasta 1.000 pers.) - 550 UF</option>
-                            <option value="esp_prov">Fiestas Provinciales / Megaeventos - 900 UF</option>
-                        </optgroup>
-                    </select>
-                </div>
-                <div class="group">
-                    <label for="cantVivo" id="lblCantVivo">Cantidad de músicos integrantes en escena:</label>
-                    <input type="number" id="cantVivo" value="1" min="1" max="30">
-                </div>
-                <div class="group">
-                    <div class="checkbox-row">
-                        <input type="checkbox" id="sonido">
-                        <label for="sonido">Incluye Sonido / PA propio en vivo (+25%)</label>
-                    </div>
-                    <div class="checkbox-row">
-                        <input type="checkbox" id="distancia">
-                        <label for="distancia">Adicional por traslado radio superior a 30km (+20%)</label>
-                    </div>
-                </div>
-                <button class="calc-btn" type="button" onclick="calcularVivo()">Calcular Honorario en Vivo</button>
-            </div>
-
-            <div id="subpestana-estudio" class="tab-content">
-                <div class="group">
-                    <label for="rubroEstudio">Seleccionar Servicio / Rubro:</label>
-                    <select id="rubroEstudio" onchange="actualizarTextoEstudio()">
-                        <optgroup label="Producción y Arreglos">
-                            <option value="trans_tema">Transcripción / Copista de Partituras (Por tema) - 20 UF</option>
-                            <option value="est_sesion">Músico Sesionista / Grabación (Por tema) - 25 UF</option>
-                            <option value="arr_tema">Arreglo Musical (Por obra) - 45 UF</option>
-                        </optgroup>
-                        <optgroup label="Docencia Musical">
-                            <option value="doc_hora">Clase Particular / Coach (Hora cátedra) - 7 UF</option>
-                        </optgroup>
-                    </select>
-                </div>
-                <div class="group">
-                    <label for="cantEstudio" id="lblCantEstudio">Cantidad de temas / obras:</label>
-                    <input type="number" id="cantEstudio" value="1" min="1" max="50">
-                </div>
-                <button class="calc-btn" type="button" onclick="calcularEstudio()">Calcular Honorario Trabajos no escénicos</button>
-            </div>
-
-            <div class="result" id="cajaResultadoTarifario" style="display:none;">
-                <h3>Honorario Sugerido MIMM</h3>
-                <div class="price" id="txtTotalTarifario">$0</div>
-                <div class="info" id="txtDetalleTarifario"></div>
-            </div>
-        </div>
-
-        <!-- PESTAÑA 2: FACTURACIÓN -->
-        <div id="pestana-facturacion" class="tab-content">
-            <div id="auth-section">
-                <p style="margin-bottom: 22px; color: var(--text-muted);">Solo pueden facturar a través del MIMM las personas asociadas.</p>
-                <div id="auth-error" class="alert hidden">socio/a no encontrado/a</div>
-                <div class="group">
-                    <label for="dni-input">Ingresá tu Número de DNI:</label>
-                    <input type="number" id="dni-input" placeholder="Ej: 35123456">
-                </div>
-                <button class="action-btn" onclick="verificarSocio()">Continuar</button>
-            </div>
-
-            <div id="app-section" class="hidden">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; background: rgba(0,0,0,0.3); padding: 12px 16px; border-radius: 10px;">
-                    <span id="socio-welcome" style="font-weight: 700; color: var(--accent-yellow);"></span>
-                    <button onclick="cerrarSesion()" class="btn-secondary" style="width: auto; padding: 8px 14px; font-size: 13px; border-radius: 8px; cursor:pointer;">Salir</button>
-                </div>
-                <h3>Solicitar Factura</h3>
-                <form id="form-google" method="POST" action="https://script.google.com/macros/s/AKfycbwAtbevSQEraMzpbwtxbDDCzZoqRUIplTpqySbfpnGf8QUYfBd6FyFfFsFJ0zrFR3GT/exec" target="hidden_iframe" onsubmit="procesarEnvioLocal(event)">
-                    <input type="hidden" name="dni" id="hidden-dni">
-                    <div class="group"><label>Nombre y Apellido del socio/a:</label><input type="text" name="nombre" id="fac-nombre" required></div>
-                    <div class="group"><label>CUIT/CUIL del destinatario:</label><input type="text" name="cuit" id="fac-cuit" required></div>
-                    <div class="group"><label>Detalle de facturación:</label><textarea name="detalle" id="fac-detalle" required></textarea></div>
-                    <div class="group"><label>Monto total ($):</label><input type="number" name="monto" id="fac-monto" required></div>
-                    <div class="group"><label>Correo electrónico:</label><input type="email" name="correo" id="fac-correo" required></div>
-                    <button type="submit" class="action-btn">Enviar Solicitud</button>
-                </form>
-                <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
-                <hr style="margin: 32px 0; border: 0; border-top: 1px solid rgba(255, 255, 255, 0.1);">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                    <h3 style="margin: 0;">Mis Solicitudes y Estados</h3>
-                    <button onclick="sincronizarHistorial()" class="btn-warning-action" style="padding: 8px 14px; font-size: 13px; border-radius: 8px; border:none; cursor:pointer;">Actualizar Estados</button>
-                </div>
-                <div id="historial-lista"><p style='font-size: 15px;'>Cargando solicitudes...</p></div>
-            </div>
-        </div>
-
-        <!-- PESTAÑA 3: BOLSA DE TRABAJO -->
-        <div id="pestana-trabajo" class="tab-content">
+        <!-- PESTAÑA 1: BOLSA DE TRABAJO -->
+        <div id="pestana-trabajo" class="tab-content active">
             <div class="group">
                 <label for="filtroCategoriaTrabajo">Filtrar categoría laboral:</label>
                 <select id="filtroCategoriaTrabajo" onchange="filtrarContenido()">
@@ -506,26 +240,47 @@
                     <option value="ofrezco">Ofrezco Servicios / Clases</option>
                 </select>
             </div>
-            <div id="contenedorTrabajos"><div class="loading-state">🔄 Conectando con la base de datos...</div></div>
+
+            <div id="contenedorTrabajos">
+                <div class="loading-state">🔄 Conectando con la base de datos del MIMM...</div>
+            </div>
         </div>
 
-        <!-- PESTAÑA 4: AGENDA -->
+        <!-- PESTAÑA 2: AGENDA DE CONCIERTOS -->
         <div id="pestana-agenda" class="tab-content">
-            <div id="contenedorAgenda"><div class="loading-state">🔄 Cargando agenda de conciertos...</div></div>
+            <div id="contenedorAgenda">
+                <div class="loading-state">🔄 Cargando agenda de conciertos...</div>
+            </div>
         </div>
 
-        <!-- PESTAÑA 5: PUBLICAR -->
+        <!-- PESTAÑA 3: TARIFARIO (Apunta al archivo tarifario.html para evitar el bucle) -->
+        <div id="pestana-tarifario" class="tab-content">
+            <div style="background: white; border-radius: 8px; overflow: hidden; border: 1px solid #dee2e6;">
+                <iframe src="tarifario.html" style="width: 100%; height: 750px; border: none;" title="Tarifario Oficial MIMM"></iframe>
+            </div>
+        </div>
+
+        <!-- PESTAÑA 4: PUBLICAR AVISO O CONCIERTO -->
         <div id="pestana-publicar" class="tab-content">
             <form id="formAviso" onsubmit="publicarAviso(event)">
                 <div class="group">
                     <label for="tipoPublicacion">¿Qué querés publicar?:</label>
-                    <select id="tipoPublicacion" onchange="actualizarFormularioPublicacion()" required>
+                    <select id="tipoPublicacion" onchange="actualizarFormulario()" required>
                         <option value="trabajo">Bolsa de Trabajo / Servicio</option>
                         <option value="concierto">Concierto / Evento en Vivo</option>
                     </select>
                 </div>
-                <div class="group"><label for="autorAviso">Tu Nombre / Artista o Banda:</label><input type="text" id="autorAviso" required></div>
-                <div class="group"><label id="labelTitulo" for="tituloAviso">Título del aviso:</label><input type="text" id="tituloAviso" required></div>
+
+                <div class="group">
+                    <label for="autorAviso">Tu Nombre / Artista o Banda:</label>
+                    <input type="text" id="autorAviso" placeholder="Ej: Juan Pérez / Trío Los Cumpas" required>
+                </div>
+
+                <div class="group">
+                    <label id="labelTitulo" for="tituloAviso">Título del aviso:</label>
+                    <input type="text" id="tituloAviso" placeholder="Ej: Busco bajista / Presentación de disco" required>
+                </div>
+
                 <div class="group" id="grupoCatTrabajo">
                     <label for="tipoCat">Categoría laboral:</label>
                     <select id="tipoCat">
@@ -535,134 +290,156 @@
                         <option value="ofrezco">Ofrezco Servicios / Clases</option>
                     </select>
                 </div>
-                <div class="group" id="grupoFechaEvento" style="display: none;"><label for="fechaEvento">Fecha y Hora:</label><input type="text" id="fechaEvento"></div>
-                <div class="group"><label id="labelZona" for="zonaAviso">Zona / Departamento:</label><input type="text" id="zonaAviso" required></div>
-                <div class="group"><label for="descAviso">Descripción y detalles:</label><textarea id="descAviso" required></textarea></div>
-                <div class="group"><label for="telAviso">WhatsApp de contacto:</label><input type="text" id="telAviso" required></div>
+
+                <div class="group" id="grupoFechaEvento" style="display: none;">
+                    <label for="fechaEvento">Fecha y Hora del Concierto:</label>
+                    <input type="text" id="fechaEvento" placeholder="Ej: Viernes 15/11 - 21:30 hs">
+                </div>
+
+                <div class="group">
+                    <label id="labelZona" for="zonaAviso">Zona / Local / Departamento:</label>
+                    <input type="text" id="zonaAviso" placeholder="Ej: Bar Cultural / Gran Mendoza" required>
+                </div>
+
+                <div class="group">
+                    <label for="descAviso">Descripción y detalles:</label>
+                    <textarea id="descAviso" placeholder="Detallá costos, entradas, requisitos o condiciones..." required></textarea>
+                </div>
+
+                <div class="group">
+                    <label for="telAviso">Número de WhatsApp de contacto (sin 0 ni 15):</label>
+                    <input type="text" id="telAviso" placeholder="Ej: 5492611234567" required>
+                </div>
+
                 <button class="action-btn" type="submit" id="btnEnviar">Publicar en la Red</button>
             </form>
         </div>
 
-        <div class="footer">Movimiento Independiente Mendocino de Músicos y Hacedores Afines</div>
+        <div class="footer">
+            Movimiento Independiente de Músicos de Mendoza (MIMM)
+        </div>
     </div>
 </div>
 
 <script>
-    function cambiarPestanaPortal(pestana) {
-        document.querySelectorAll('.tabs .tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-        const buscador = document.getElementById('buscadorContainer');
-        buscador.style.display = (pestana === 'trabajo' || pestana === 'agenda') ? 'block' : 'none';
+    const API_URL = "https://script.google.com/macros/s/AKfycbzCpYNJSTtjqkPfQkBm0HkVyfllk-eMnKjY5_pPCswHs-AcRVQY_qVdxHK5AVMa1vFZNQ/exec";
+    let listaGlobalAvisos = [];
 
-        if (pestana === 'tarifario') {
-            document.querySelectorAll('.tabs')[0].querySelectorAll('.tab-btn')[0].classList.add('active');
-            document.getElementById('pestana-tarifario').classList.add('active');
-        } else if (pestana === 'facturacion') {
-            document.querySelectorAll('.tabs')[0].querySelectorAll('.tab-btn')[1].classList.add('active');
-            document.getElementById('pestana-facturacion').classList.add('active');
-        } else if (pestana === 'trabajo') {
-            document.querySelectorAll('.tabs')[0].querySelectorAll('.tab-btn')[2].classList.add('active');
+    window.onload = function() {
+        cargarAvisos();
+    };
+
+    // Registro del Service Worker para la aplicación PWA
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js')
+                .then((reg) => console.log('Service Worker registrado con éxito', reg))
+                .catch((err) => console.log('Error al registrar Service Worker', err));
+        });
+    }
+
+    function cambiarPestana(pestana) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+        const buscador = document.getElementById('buscadorContainer');
+        if (pestana === 'tarifario' || pestana === 'publicar') {
+            buscador.style.display = 'none';
+        } else {
+            buscador.style.display = 'block';
+        }
+
+        if (pestana === 'trabajo') {
+            document.querySelectorAll('.tab-btn')[0].classList.add('active');
             document.getElementById('pestana-trabajo').classList.add('active');
         } else if (pestana === 'agenda') {
-            document.querySelectorAll('.tabs')[0].querySelectorAll('.tab-btn')[3].classList.add('active');
+            document.querySelectorAll('.tab-btn')[1].classList.add('active');
             document.getElementById('pestana-agenda').classList.add('active');
-        } else if (pestana === 'publicar') {
-            document.querySelectorAll('.tabs')[0].querySelectorAll('.tab-btn')[4].classList.add('active');
+        } else if (pestana === 'tarifario') {
+            document.querySelectorAll('.tab-btn')[2].classList.add('active');
+            document.getElementById('pestana-tarifario').classList.add('active');
+        } else {
+            document.querySelectorAll('.tab-btn')[3].classList.add('active');
             document.getElementById('pestana-publicar').classList.add('active');
         }
     }
 
-    const VALOR_UF = 2903.35;
-    const ufVivo = { gast_cat1: 35, gast_cat2: 50, esp_sala: 200, esp_mun: 350, esp_dep: 550, esp_prov: 900 };
-    const ufEstudio = { trans_tema: 20, est_sesion: 25, arr_tema: 45, doc_hora: 7 };
+    function actualizarFormulario() {
+        const tipo = document.getElementById('tipoPublicacion').value;
+        const grupoCat = document.getElementById('grupoCatTrabajo');
+        const grupoFecha = document.getElementById('grupoFechaEvento');
+        const labelTitulo = document.getElementById('labelTitulo');
+        const labelZona = document.getElementById('labelZona');
 
-    function cambiarPestanaTarifario(sub) {
-        document.getElementById('btnSubVivo').classList.remove('active');
-        document.getElementById('btnSubEstudio').classList.remove('active');
-        document.getElementById('subpestana-vivo').classList.remove('active');
-        document.getElementById('subpestana-estudio').classList.remove('active');
-        document.getElementById('cajaResultadoTarifario').style.display = 'none';
-
-        if (sub === 'vivo') {
-            document.getElementById('btnSubVivo').classList.add('active');
-            document.getElementById('subpestana-vivo').classList.add('active');
+        if (tipo === 'concierto') {
+            grupoCat.style.display = 'none';
+            grupoFecha.style.display = 'block';
+            labelTitulo.innerText = "Nombre del Evento / Concierto:";
+            labelZona.innerText = "Lugar / Bar / Sala y Zona:";
         } else {
-            document.getElementById('btnSubEstudio').classList.add('active');
-            document.getElementById('subpestana-estudio').classList.add('active');
+            grupoCat.style.display = 'block';
+            grupoFecha.style.display = 'none';
+            labelTitulo.innerText = "Título del aviso:";
+            labelZona.innerText = "Zona / Departamento:";
         }
     }
 
-    function calcularVivo() {
-        const rubro = document.getElementById('rubroVivo').value;
-        const cant = parseFloat(document.getElementById('cantVivo').value) || 1;
-        const conSonido = document.getElementById('sonido').checked;
-        const conDistancia = document.getElementById('distancia').checked;
-        let uf = ufVivo[rubro];
-        let total = uf * VALOR_UF * cant;
-        let extras = [];
-        if (conSonido) { total *= 1.25; extras.push("sonido propio (+25%)"); }
-        if (conDistancia) { total *= 1.20; extras.push("traslado interurbano (+20%)"); }
-        mostrarResultadoTarifario(total, uf * cant, extras);
-    }
-
-    function calcularEstudio() {
-        const rubro = document.getElementById('rubroEstudio').value;
-        const cant = parseFloat(document.getElementById('cantEstudio').value) || 1;
-        let uf = ufEstudio[rubro];
-        let total = uf * VALOR_UF * cant;
-        mostrarResultadoTarifario(total, uf * cant, []);
-    }
-
-    function mostrarResultadoTarifario(total, totalUf, extras) {
-        const resBox = document.getElementById('cajaResultadoTarifario');
-        resBox.style.display = 'block';
-        document.getElementById('txtTotalTarifario').innerText = '$ ' + Math.round(total).toLocaleString('es-AR');
-        let detalle = `Equivalente a ${totalUf} UF-MIMM a $${VALOR_UF.toLocaleString('es-AR')} c/u.`;
-        if (extras.length > 0) { detalle += ` Adicionales: ${extras.join(', ')}.`; }
-        document.getElementById('txtDetalleTarifario').innerText = detalle;
-    }
-
-    const API_URL = "https://script.google.com/macros/s/AKfycbzCpYNJSTtjqkPfQkBm0HkVyfllk-eMnKjY5_pPCswHs-AcRVQY_qVdxHK5AVMa1vFZNQ/exec";
-    let listaGlobalAvisos = [];
-
-    window.onload = function() { cargarAvisos(); };
-
     function cargarAvisos() {
+        const contTrabajos = document.getElementById('contenedorTrabajos');
+        const contAgenda = document.getElementById('contenedorAgenda');
+        
         fetch(API_URL)
-            .then(res => res.json())
+            .then(response => response.json())
             .then(data => {
                 listaGlobalAvisos = data.reverse();
                 renderizarListados(listaGlobalAvisos);
             })
-            .catch(err => {
-                document.getElementById('contenedorTrabajos').innerHTML = `<div class="empty-state">⚠️ No se pudieron cargar los avisos.</div>`;
-                document.getElementById('contenedorAgenda').innerHTML = `<div class="empty-state">⚠️ No se pudo cargar la agenda.</div>`;
+            .catch(error => {
+                console.error("Error al cargar:", error);
+                contTrabajos.innerHTML = `<div class="empty-state" style="color: #d90429;">⚠️ No se pudieron cargar los avisos. Intentá más tarde.</div>`;
+                contAgenda.innerHTML = `<div class="empty-state" style="color: #d90429;">⚠️ No se pudo cargar la agenda.</div>`;
             });
     }
 
     function renderizarListados(datos) {
         const contTrabajos = document.getElementById('contenedorTrabajos');
         const contAgenda = document.getElementById('contenedorAgenda');
+
         contTrabajos.innerHTML = "";
         contAgenda.innerHTML = "";
-        let hayTrabajos = false, hayConciertos = false;
+
+        let hayTrabajos = false;
+        let hayConciertos = false;
 
         datos.forEach(item => {
             const esConcierto = item.categoria === 'concierto';
+            
             const card = document.createElement('div');
             card.className = esConcierto ? 'listing-card concierto' : 'listing-card';
             card.setAttribute('data-cat', item.categoria || 'trabajo');
             card.setAttribute('data-texto', `${item.autor || ''} ${item.titulo} ${item.zona} ${item.descripcion}`.toLowerCase());
 
-            let telLimpio = (item.whatsapp || "").replace(/\D/g, '');
-            const mensajeWa = encodeURIComponent(`Hola, me interesa tu publicación "${item.titulo}" vista en el MIMM.`);
+            let fechaFormateada = "Reciente";
+            if (item.fecha) {
+                const d = new Date(item.fecha);
+                if (!isNaN(d)) fechaFormateada = d.toLocaleDateString('es-AR');
+            }
+
+            const autorTexto = (item.autor && item.autor.trim() !== "" && item.autor !== "Anónimo") ? `👤 Publicado por: ${item.autor}` : `👤 Publicado por: Comunidad MIMM`;
+            const mensajeWa = encodeURIComponent(`Hola ${item.autor || 'colega'}, me interesa tu publicación "${item.titulo}" vista en el MIMM.`);
+
+            let extraInfo = esConcierto && item.fechaEvento ? `<div style="font-size:0.8rem; color:#d90429; font-weight:bold; margin-bottom:4px;">📅 Fecha: ${item.fechaEvento}</div>` : '';
 
             card.innerHTML = `
                 <div class="listing-title">${item.titulo}</div>
-                <div class="listing-autor">👤 ${item.autor || 'Comunidad MIMM'}</div>
-                <div class="listing-meta"><span>📍 ${item.zona}</span></div>
+                <div class="listing-autor">${autorTexto}</div>
+                ${extraInfo}
+                <div class="listing-meta">
+                    <span>📍 ${item.zona}</span>
+                    <span>${fechaFormateada}</span>
+                </div>
                 <div class="listing-desc">${item.descripcion}</div>
-                <a href="https://wa.me/${telLimpio}?text=${mensajeWa}" class="wa-btn" target="_blank">💬 Contactar por WhatsApp</a>
+                <a href="https://wa.me/${item.whatsapp}?text=${mensajeWa}" class="wa-btn" target="_blank">💬 Contactar por WhatsApp</a>
             `;
 
             if (esConcierto) {
@@ -674,30 +451,46 @@
             }
         });
 
-        if (!hayTrabajos) contTrabajos.innerHTML = `<div class="empty-state">📭 No hay avisos laborales publicados.</div>`;
-        if (!hayConciertos) contAgenda.innerHTML = `<div class="empty-state">🎸 No hay conciertos agendados.</div>`;
+        if (!hayTrabajos) {
+            contTrabajos.innerHTML = `<div class="empty-state">📭 No hay avisos laborales publicados en esta categoría.</div>`;
+        }
+        if (!hayConciertos) {
+            contAgenda.innerHTML = `<div class="empty-state">🎸 No hay conciertos agendados por el momento.<br>¡Publicá el tuyo desde la pestaña Publicar!</div>`;
+        }
+
         filtrarContenido();
     }
 
     function filtrarContenido() {
         const textoBusqueda = document.getElementById('inputBuscador').value.toLowerCase();
         const categoriaTrabajo = document.getElementById('filtroCategoriaTrabajo').value;
-        document.querySelectorAll('.listing-card').forEach(card => {
+        const tarjetas = document.querySelectorAll('.listing-card');
+
+        tarjetas.forEach(card => {
             const cat = card.getAttribute('data-cat');
-            const texto = card.getAttribute('data-texto');
-            if (!texto) return;
-            const coincide = texto.includes(textoBusqueda);
+            const textoCard = card.getAttribute('data-texto');
+            if(!textoCard) return;
+            
+            const coincideTexto = textoCard.includes(textoBusqueda);
+            
             if (cat === 'concierto') {
-                card.style.display = coincide ? 'block' : 'none';
+                card.style.display = coincideTexto ? 'block' : 'none';
             } else {
-                card.style.display = ((categoriaTrabajo === 'todos' || cat === categoriaTrabajo) && coincide) ? 'block' : 'none';
+                const coincideCat = (categoriaTrabajo === 'todos' || cat === categoriaTrabajo);
+                card.style.display = (coincideCat && coincideTexto) ? 'block' : 'none';
             }
         });
     }
 
     function publicarAviso(event) {
         event.preventDefault();
+
+        const btnEnviar = document.getElementById('btnEnviar');
+        btnEnviar.disabled = true;
+        btnEnviar.innerText = "Publicando...";
+
         const tipo = document.getElementById('tipoPublicacion').value;
+        
         const datos = {
             autor: document.getElementById('autorAviso').value,
             titulo: document.getElementById('tituloAviso').value,
@@ -713,77 +506,27 @@
             mode: "no-cors",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(datos)
-        }).then(() => {
-            alert('¡Publicación realizada con éxito!');
+        })
+        .then(() => {
+            alert('¡Publicación realizada con éxito en la red del MIMM!');
             document.getElementById('formAviso').reset();
-            cargarAvisos();
+            btnEnviar.disabled = false;
+            btnEnviar.innerText = "Publicar en la Red";
+            
+            if (tipo === 'concierto') {
+                cambiarPestana('agenda');
+            } else {
+                cambiarPestana('trabajo');
+            }
+            
+            setTimeout(cargarAvisos, 1500);
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            alert('Hubo un error al publicar. Verificá tu conexión.');
+            btnEnviar.disabled = false;
+            btnEnviar.innerText = "Publicar en la Red";
         });
-    }
-
-    let dniActual = "";
-    const sociosValidos = ["12345678", "35123456", "40999888"];
-    const URL_SCRIPT_FACTURACION = "https://script.google.com/macros/s/AKfycbwAtbevSQEraMzpbwtxbDDCzZoqRUIplTpqySbfpnGf8QUYfBd6FyFfFsFJ0zrFR3GT/exec";
-
-    function verificarSocio() {
-        const dni = document.getElementById("dni-input").value.trim();
-        if (sociosValidos.includes(dni)) {
-            dniActual = dni;
-            document.getElementById("hidden-dni").value = dni;
-            document.getElementById("auth-error").classList.add("hidden");
-            document.getElementById("auth-section").classList.add("hidden");
-            document.getElementById("app-section").classList.remove("hidden");
-            document.getElementById("socio-welcome").innerText = `Socio/a DNI: ${dni}`;
-            sincronizarHistorial();
-        } else {
-            document.getElementById("auth-error").classList.remove("hidden");
-        }
-    }
-
-    function cerrarSesion() {
-        dniActual = "";
-        document.getElementById("app-section").classList.add("hidden");
-        document.getElementById("auth-section").classList.remove("hidden");
-    }
-
-    function procesarEnvioLocal(event) {
-        setTimeout(() => {
-            alert("¡Solicitud registrada con éxito!");
-            sincronizarHistorial();
-        }, 800);
-    }
-
-    function sincronizarHistorial() {
-        const contenedor = document.getElementById("historial-lista");
-        contenedor.innerHTML = "<p style='font-size: 15px; color: var(--text-muted);'>Sincronizando...</p>";
-        fetch(`${URL_SCRIPT_FACTURACION}?dni=${dniActual}`, { method: "GET", redirect: "follow" })
-            .then(res => res.json())
-            .then(data => {
-                if (!Array.isArray(data) || data.length === 0) {
-                    contenedor.innerHTML = "<p style='font-size: 15px; color: var(--text-muted);'>No tenés solicitudes registradas.</p>";
-                    return;
-                }
-                contenedor.innerHTML = "";
-                data.reverse().forEach(fac => {
-                    contenedor.innerHTML += `
-                        <div class="history-card">
-                            <strong>Socio/a:</strong> ${fac.nombre}<br>
-                            <strong>Destinatario (CUIT):</strong> ${fac.cuit}<br>
-                            <strong>Detalle:</strong> ${fac.detalle}<br>
-                            <strong>Monto:</strong> $${fac.monto}<br>
-                            <strong>Estado:</strong> <span class="badge-pendiente">${fac.estado || 'Pendiente'}</span>
-                        </div>
-                    `;
-                });
-            })
-            .catch(() => {
-                contenedor.innerHTML = "<p style='font-size: 15px; color: var(--text-muted);'>No se pudo sincronizar el historial.</p>";
-            });
-    }
-
-    function actualizarFormularioPublicacion() {
-        const tipo = document.getElementById('tipoPublicacion').value;
-        document.getElementById('grupoCatTrabajo').style.display = (tipo === 'concierto') ? 'none' : 'block';
-        document.getElementById('grupoFechaEvento').style.display = (tipo === 'concierto') ? 'block' : 'none';
     }
 </script>
 
