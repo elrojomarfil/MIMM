@@ -190,6 +190,7 @@
             margin-bottom: 0;
             font-size: 0.9rem;
             color: var(--text-light);
+            font-weight: normal;
         }
 
         .result {
@@ -342,6 +343,7 @@
             border: 1px solid rgba(239, 68, 68, 0.3);
             border-radius: 10px;
             margin-bottom: 18px;
+            font-size: 15px;
         }
         .history-card {
             background: rgba(9, 9, 11, 0.5);
@@ -350,11 +352,14 @@
             margin-bottom: 14px;
             border-left: 5px solid var(--accent-yellow);
             border: 1px solid rgba(255, 255, 255, 0.08);
+            font-size: 15px;
+            line-height: 1.5;
         }
-        .badge-pendiente { color: #fef08a; background: rgba(250, 204, 21, 0.15); padding: 4px 10px; border-radius: 6px; font-weight: 700; }
-        .badge-emitida { color: #86efac; background: rgba(34, 197, 94, 0.15); padding: 4px 10px; border-radius: 6px; font-weight: 700; }
+        .badge-pendiente { color: #fef08a; background: rgba(250, 204, 21, 0.15); border: 1px solid rgba(250, 204, 21, 0.3); padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 13px; display: inline-block; }
+        .badge-emitida { color: #86efac; background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 13px; display: inline-block; }
         .footer { text-align: center; margin-top: 25px; font-size: 0.8rem; color: var(--text-muted); }
         .hidden { display: none !important; }
+        hr { margin: 32px 0; border: 0; border-top: 1px solid rgba(255, 255, 255, 0.1); }
     </style>
 </head>
 <body>
@@ -371,6 +376,7 @@
             <input type="text" id="inputBuscador" class="search-input" placeholder="🔍 Buscar por nombre, banda, instrumento o zona..." oninput="filtrarContenido()">
         </div>
 
+        <!-- ORDEN DE PESTAÑAS: 1. Tarifario, 2. Facturación, 3. Bolsa, 4. Agenda, 5. Publicar -->
         <div class="tabs">
             <button class="tab-btn active" type="button" onclick="cambiarPestanaPortal('tarifario')">💰 Tarifario</button>
             <button class="tab-btn" type="button" onclick="cambiarPestanaPortal('facturacion')">🧾 Facturación</button>
@@ -460,8 +466,8 @@
         <!-- PESTAÑA 2: FACTURACIÓN -->
         <div id="pestana-facturacion" class="tab-content">
             <div id="auth-section">
-                <p style="margin-bottom: 22px; color: var(--text-muted);">Solo pueden facturar a través del MIMM las personas asociadas.</p>
-                <div id="auth-error" class="alert hidden">socio/a no encontrado/a</div>
+                <p style="margin-bottom: 22px; color: var(--text-muted);">Solo pueden facturar a través del MIMM las personas asociadas (socios/as con cuota al día).</p>
+                <div id="auth-error" class="alert hidden">DNI no encontrado o socio/a sin cuota al día.</div>
                 <div class="group">
                     <label for="dni-input">Ingresá tu Número de DNI:</label>
                     <input type="number" id="dni-input" placeholder="Ej: 35123456">
@@ -470,25 +476,28 @@
             </div>
 
             <div id="app-section" class="hidden">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; background: rgba(0,0,0,0.3); padding: 12px 16px; border-radius: 10px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; background: rgba(0,0,0,0.3); padding: 12px 16px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05);">
                     <span id="socio-welcome" style="font-weight: 700; color: var(--accent-yellow);"></span>
                     <button onclick="cerrarSesion()" class="btn-secondary" style="width: auto; padding: 8px 14px; font-size: 13px; border-radius: 8px; cursor:pointer;">Salir</button>
                 </div>
                 <h3>Solicitar Factura</h3>
                 <form id="form-google" method="POST" action="https://script.google.com/macros/s/AKfycbwAtbevSQEraMzpbwtxbDDCzZoqRUIplTpqySbfpnGf8QUYfBd6FyFfFsFJ0zrFR3GT/exec" target="hidden_iframe" onsubmit="procesarEnvioLocal(event)">
                     <input type="hidden" name="dni" id="hidden-dni">
-                    <div class="group"><label>Nombre y Apellido del socio/a:</label><input type="text" name="nombre" id="fac-nombre" required></div>
-                    <div class="group"><label>CUIT/CUIL del destinatario:</label><input type="text" name="cuit" id="fac-cuit" required></div>
-                    <div class="group"><label>Detalle de facturación:</label><textarea name="detalle" id="fac-detalle" required></textarea></div>
-                    <div class="group"><label>Monto total ($):</label><input type="number" name="monto" id="fac-monto" required></div>
-                    <div class="group"><label>Correo electrónico:</label><input type="email" name="correo" id="fac-correo" required></div>
+                    <div class="group"><label>Nombre y Apellido del socio/a:</label><input type="text" name="nombre" id="fac-nombre" placeholder="Ej: Juan Pérez" required></div>
+                    <div class="group"><label>CUIT/CUIL de la persona o institución destinataria:</label><input type="text" name="cuit" id="fac-cuit" placeholder="Ej: 30-71111111-9" required></div>
+                    <div class="group"><label>Detalle de facturación (Trabajo realizado, lugar, fecha, expte., etc.):</label><textarea name="detalle" id="fac-detalle" placeholder="Ej: Honorarios por show en vivo..." required></textarea></div>
+                    <div class="group"><label>Monto total a facturar ($):</label><input type="number" name="monto" id="fac-monto" placeholder="Ej: 50000" required></div>
+                    <div class="group"><label>Correo electrónico donde debe ser enviada la factura:</label><input type="email" name="correo" id="fac-correo" placeholder="Ej: dependencia@solicitante.com" required></div>
                     <button type="submit" class="action-btn">Enviar Solicitud</button>
                 </form>
                 <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
-                <hr style="margin: 32px 0; border: 0; border-top: 1px solid rgba(255, 255, 255, 0.1);">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <hr>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
                     <h3 style="margin: 0;">Mis Solicitudes y Estados</h3>
-                    <button onclick="sincronizarHistorial()" class="btn-warning-action" style="padding: 8px 14px; font-size: 13px; border-radius: 8px; border:none; cursor:pointer;">Actualizar Estados</button>
+                    <div style="display: flex; gap: 8px;">
+                        <button onclick="sincronizarHistorial()" class="btn-warning-action" style="width: auto; padding: 8px 14px; font-size: 13px; border-radius: 8px; border:none; cursor:pointer;">Actualizar Estados</button>
+                        <button onclick="limpiarHistorial()" class="btn-secondary" style="width: auto; padding: 8px 14px; font-size: 13px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); color: #fca5a5 !important; cursor:pointer;" title="Borrar historial local">Borrar</button>
+                    </div>
                 </div>
                 <div id="historial-lista"><p style='font-size: 15px;'>Cargando solicitudes...</p></div>
             </div>
@@ -747,16 +756,17 @@
 
     function verificarSocio() {
         const dni = document.getElementById("dni-input").value.trim();
+        const errorBox = document.getElementById("auth-error");
         if (sociosValidos.includes(dni)) {
             dniActual = dni;
             document.getElementById("hidden-dni").value = dni;
-            document.getElementById("auth-error").classList.add("hidden");
+            errorBox.classList.add("hidden");
             document.getElementById("auth-section").classList.add("hidden");
             document.getElementById("app-section").classList.remove("hidden");
             document.getElementById("socio-welcome").innerText = `Socio/a DNI: ${dni}`;
             sincronizarHistorial();
         } else {
-            document.getElementById("auth-error").classList.remove("hidden");
+            errorBox.classList.remove("hidden");
         }
     }
 
@@ -764,41 +774,102 @@
         dniActual = "";
         document.getElementById("app-section").classList.add("hidden");
         document.getElementById("auth-section").classList.remove("hidden");
+        document.getElementById("dni-input").value = "";
+        document.getElementById("fac-nombre").value = "";
     }
 
     function procesarEnvioLocal(event) {
+        const nombre = document.getElementById("fac-nombre").value.trim();
+        const cuit = document.getElementById("fac-cuit").value.trim();
+        const detalle = document.getElementById("fac-detalle").value.trim();
+        const monto = document.getElementById("fac-monto").value.trim();
+        const correo = document.getElementById("fac-correo").value.trim();
+
+        const nuevaFactura = {
+            nombre,
+            dni: dniActual,
+            cuit,
+            detalle,
+            monto,
+            correo,
+            fecha: new Date().toLocaleDateString(),
+            estado: "Pendiente de emisión 🟡"
+        };
+
+        let misFacturas = JSON.parse(localStorage.getItem("mimm_facturas_" + dniActual)) || [];
+        misFacturas.push(nuevaFactura);
+        localStorage.setItem("mimm_facturas_" + dniActual, JSON.stringify(misFacturas));
+
         setTimeout(() => {
+            document.getElementById("fac-cuit").value = "";
+            document.getElementById("fac-detalle").value = "";
+            document.getElementById("fac-monto").value = "";
+            document.getElementById("fac-correo").value = "";
             alert("¡Solicitud registrada con éxito!");
             sincronizarHistorial();
         }, 800);
     }
 
+    function limpiarHistorial() {
+        if(confirm("¿Estás seguro de borrar el historial guardado en este dispositivo?")) {
+            localStorage.removeItem("mimm_facturas_" + dniActual);
+            cargarHistorialLocalVacio();
+        }
+    }
+
+    function cargarHistorialLocalVacio() {
+        const contenedor = document.getElementById("historial-lista");
+        contenedor.innerHTML = "<p style='font-size: 15px;'>No tenés solicitudes registradas.</p>";
+    }
+
     function sincronizarHistorial() {
         const contenedor = document.getElementById("historial-lista");
-        contenedor.innerHTML = "<p style='font-size: 15px; color: var(--text-muted);'>Sincronizando...</p>";
+        contenedor.innerHTML = "<p style='font-size: 15px; color: var(--text-muted);'>Sincronizando con la planilla...</p>";
         fetch(`${URL_SCRIPT_FACTURACION}?dni=${dniActual}`, { method: "GET", redirect: "follow" })
             .then(res => res.json())
             .then(data => {
                 if (!Array.isArray(data) || data.length === 0) {
-                    contenedor.innerHTML = "<p style='font-size: 15px; color: var(--text-muted);'>No tenés solicitudes registradas.</p>";
+                    let misFacturasLocales = JSON.parse(localStorage.getItem("mimm_facturas_" + dniActual)) || [];
+                    if (misFacturasLocales.length > 0) {
+                        renderizarListaHistorial(misFacturasLocales);
+                    } else {
+                        contenedor.innerHTML = "<p style='font-size: 15px; color: var(--text-muted);'>No tenés solicitudes registradas.</p>";
+                    }
                     return;
                 }
-                contenedor.innerHTML = "";
-                data.reverse().forEach(fac => {
-                    contenedor.innerHTML += `
-                        <div class="history-card">
-                            <strong>Socio/a:</strong> ${fac.nombre}<br>
-                            <strong>Destinatario (CUIT):</strong> ${fac.cuit}<br>
-                            <strong>Detalle:</strong> ${fac.detalle}<br>
-                            <strong>Monto:</strong> $${fac.monto}<br>
-                            <strong>Estado:</strong> <span class="badge-pendiente">${fac.estado || 'Pendiente'}</span>
-                        </div>
-                    `;
-                });
+                localStorage.setItem("mimm_facturas_" + dniActual, JSON.stringify(data));
+                renderizarListaHistorial(data);
             })
             .catch(() => {
-                contenedor.innerHTML = "<p style='font-size: 15px; color: var(--text-muted);'>No se pudo sincronizar el historial.</p>";
+                let misFacturas = JSON.parse(localStorage.getItem("mimm_facturas_" + dniActual)) || [];
+                renderizarListaHistorial(misFacturas);
             });
+    }
+
+    function renderizarListaHistorial(facturas) {
+        const contenedor = document.getElementById("historial-lista");
+        if (!facturas || facturas.length === 0) {
+            contenedor.innerHTML = "<p style='font-size: 15px; color: var(--text-muted);'>No tenés solicitudes registradas.</p>";
+            return;
+        }
+        contenedor.innerHTML = "";
+        [...facturas].reverse().forEach(fac => {
+            let estadoStr = (fac.estado || "").toLowerCase();
+            let esEmitida = estadoStr.includes("emitid") || estadoStr.includes("aprob");
+            let claseEstado = esEmitida ? "badge-emitida" : "badge-pendiente";
+
+            contenedor.innerHTML += `
+                <div class="history-card">
+                    <strong style="color: var(--accent-yellow);">Socio/a:</strong> ${fac.nombre} (DNI: ${fac.dni})<br>
+                    <strong>Destinatario (CUIT):</strong> ${fac.cuit}<br>
+                    <strong>Detalle:</strong> ${fac.detalle}<br>
+                    <strong>Monto:</strong> <span style="color: var(--accent-yellow); font-weight:700;">$${fac.monto}</span><br>
+                    <strong>Enviar a:</strong> ${fac.correo}<br>
+                    <strong>Fecha:</strong> ${fac.fecha || 'N/D'}<br>
+                    <strong>Estado:</strong> <span class="${claseEstado}">${fac.estado || 'Pendiente de emisión 🟡'}</span>
+                </div>
+            `;
+        });
     }
 
     function actualizarFormularioPublicacion() {
