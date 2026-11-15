@@ -654,28 +654,46 @@
         document.getElementById('txtDetalleTarifario').innerText = detalle;
     }
 
-    // URL de la implementación vigente de Apps Script (Lectura y Escritura unificada)
+    // URL de la implementación vigente de Apps Script
     const API_URL = "https://script.google.com/macros/s/AKfycbzd6rwNpc74Vhb-OeJHPMRhdT91sTy5jNYzTLTXBJ4rHET6a-2n46z37Dqine7Q3pk/exec";
     let listaGlobalAvisos = [];
 
     window.onload = function() { cargarAvisos(); };
 
     function cargarAvisos() {
-        fetch(API_URL)
-            .then(res => res.json())
-            .then(data => {
-                if (Array.isArray(data)) {
-                    listaGlobalAvisos = data.reverse();
-                    renderizarListados(listaGlobalAvisos);
-                } else {
-                    throw new Error("Respuesta inválida");
-                }
-            })
-            .catch(err => {
-                console.error("Error al cargar avisos:", err);
-                document.getElementById('contenedorTrabajos').innerHTML = `<div class="empty-state">⚠️ No se pudieron cargar los avisos.</div>`;
-                document.getElementById('contenedorAgenda').innerHTML = `<div class="empty-state">⚠️ No se pudo cargar la agenda.</div>`;
-            });
+        // Implementación con JSONP idéntica al sistema de facturación para evitar bloqueos de CORS
+        const callbackName = 'jsonp_avisos_cb_' + Math.round(100000 * Math.random());
+        
+        window[callbackName] = function(data) {
+            delete window[callbackName];
+            const scriptTag = document.getElementById(callbackName);
+            if (scriptTag) scriptTag.remove();
+
+            if (Array.isArray(data)) {
+                listaGlobalAvisos = data.reverse();
+                renderizarListados(listaGlobalAvisos);
+            } else {
+                console.error("Datos recibidos inválidos:", data);
+                mostrarEstadoVacio();
+            }
+        };
+
+        const script = document.createElement('script');
+        script.id = callbackName;
+        script.src = `${API_URL}?callback=${callbackName}`;
+        script.onerror = function() {
+            delete window[callbackName];
+            script.remove();
+            console.error("Error de red al cargar avisos.");
+            mostrarEstadoVacio();
+        };
+        
+        document.body.appendChild(script);
+    }
+
+    function mostrarEstadoVacio() {
+        document.getElementById('contenedorTrabajos').innerHTML = `<div class="empty-state">📭 No hay avisos laborales publicados o sin conexión.</div>`;
+        document.getElementById('contenedorAgenda').innerHTML = `<div class="empty-state">🎸 No hay conciertos agendados.</div>`;
     }
 
     function renderizarListados(datos) {
