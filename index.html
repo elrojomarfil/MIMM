@@ -654,36 +654,50 @@
         document.getElementById('txtDetalleTarifario').innerText = detalle;
     }
 
-    // URL de la API de Avisos implementada
+    // Configuración de URLs y IDs para lectura y escritura
     const API_URL = "https://script.google.com/macros/s/AKfycbzd6rwNpc74Vhb-OeJHPMRhdT91sTy5jNYzTLTXBJ4rHET6a-2n46z37Dqine7Q3pk/exec";
+    const SHEET_ID = "1z-Gh0_q58zSmTn3pNi1WCNLlSnSn0r2fbKDM-Zd6Ei8";
     let listaGlobalAvisos = [];
 
     window.onload = function() { cargarAvisos(); };
 
     function cargarAvisos() {
-        // Callback global para JSONP (soluciona CORS en GitHub Pages)
-        window.callbackMIMM = function(data) {
-            if (data && data.error) {
-                console.error("Error desde Apps Script:", data.error);
-                document.getElementById('contenedorTrabajos').innerHTML = `<div class="empty-state">⚠️ ${data.error}</div>`;
-                document.getElementById('contenedorAgenda').innerHTML = `<div class="empty-state">⚠️ ${data.error}</div>`;
-                return;
-            }
-            listaGlobalAvisos = Array.isArray(data) ? data.reverse() : [];
-            renderizarListados(listaGlobalAvisos);
-        };
+        // Uso de la API de Google Sheets gviz para lectura directa, segura y sin bloqueos de CORS
+        const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Avisos`;
 
-        const scriptViejo = document.getElementById('jsonpScript');
-        if (scriptViejo) scriptViejo.remove();
+        fetch(url)
+            .then(res => res.text())
+            .then(text => {
+                const match = text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\);/);
+                if (!match) throw new Error("Formato de respuesta inválido");
+                const json = JSON.parse(match[1]);
+                const rows = json.table.rows;
+                
+                let data = [];
+                rows.forEach(r => {
+                    const cols = r.c;
+                    if (cols && cols[2] && cols[2].v) { // Si la Columna C (Título) tiene contenido
+                        data.push({
+                            fecha: cols[0] ? cols[0].v : '',
+                            autor: cols[1] ? cols[1].v : '',
+                            titulo: cols[2] ? cols[2].v : '',
+                            categoria: cols[3] ? cols[3].v : 'trabajo',
+                            zona: cols[4] ? cols[4].v : '',
+                            descripcion: cols[5] ? cols[5].v : '',
+                            whatsapp: cols[6] ? cols[6].v : '',
+                            fechaEvento: cols[7] ? cols[7].v : ''
+                        });
+                    }
+                });
 
-        const script = document.createElement('script');
-        script.id = 'jsonpScript';
-        script.src = `${API_URL}?callback=callbackMIMM`;
-        script.onerror = function() {
-            document.getElementById('contenedorTrabajos').innerHTML = `<div class="empty-state">⚠️ No se pudieron cargar los avisos.</div>`;
-            document.getElementById('contenedorAgenda').innerHTML = `<div class="empty-state">⚠️ No se pudo cargar la agenda.</div>`;
-        };
-        document.body.appendChild(script);
+                listaGlobalAvisos = data.reverse();
+                renderizarListados(listaGlobalAvisos);
+            })
+            .catch(err => {
+                console.error("Error al cargar avisos:", err);
+                document.getElementById('contenedorTrabajos').innerHTML = `<div class="empty-state">⚠️ No se pudieron cargar los avisos.</div>`;
+                document.getElementById('contenedorAgenda').innerHTML = `<div class="empty-state">⚠️ No se pudo cargar la agenda.</div>`;
+            });
     }
 
     function renderizarListados(datos) {
