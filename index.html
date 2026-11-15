@@ -654,44 +654,22 @@
         document.getElementById('txtDetalleTarifario').innerText = detalle;
     }
 
-    // Configuración de URLs y IDs para lectura y escritura
+    // URL de la implementación vigente de Apps Script (Lectura y Escritura unificada)
     const API_URL = "https://script.google.com/macros/s/AKfycbzd6rwNpc74Vhb-OeJHPMRhdT91sTy5jNYzTLTXBJ4rHET6a-2n46z37Dqine7Q3pk/exec";
-    const SHEET_ID = "1z-Gh0_q58zSmTn3pNi1WCNLlSnSn0r2fbKDM-Zd6Ei8";
     let listaGlobalAvisos = [];
 
     window.onload = function() { cargarAvisos(); };
 
     function cargarAvisos() {
-        // Uso de la API de Google Sheets gviz para lectura directa, segura y sin bloqueos de CORS
-        const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Avisos`;
-
-        fetch(url)
-            .then(res => res.text())
-            .then(text => {
-                const match = text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\);/);
-                if (!match) throw new Error("Formato de respuesta inválido");
-                const json = JSON.parse(match[1]);
-                const rows = json.table.rows;
-                
-                let data = [];
-                rows.forEach(r => {
-                    const cols = r.c;
-                    if (cols && cols[2] && cols[2].v) { // Si la Columna C (Título) tiene contenido
-                        data.push({
-                            fecha: cols[0] ? cols[0].v : '',
-                            autor: cols[1] ? cols[1].v : '',
-                            titulo: cols[2] ? cols[2].v : '',
-                            categoria: cols[3] ? cols[3].v : 'trabajo',
-                            zona: cols[4] ? cols[4].v : '',
-                            descripcion: cols[5] ? cols[5].v : '',
-                            whatsapp: cols[6] ? cols[6].v : '',
-                            fechaEvento: cols[7] ? cols[7].v : ''
-                        });
-                    }
-                });
-
-                listaGlobalAvisos = data.reverse();
-                renderizarListados(listaGlobalAvisos);
+        fetch(API_URL)
+            .then(res => res.json())
+            .then(data => {
+                if (Array.isArray(data)) {
+                    listaGlobalAvisos = data.reverse();
+                    renderizarListados(listaGlobalAvisos);
+                } else {
+                    throw new Error("Respuesta inválida");
+                }
             })
             .catch(err => {
                 console.error("Error al cargar avisos:", err);
