@@ -661,13 +661,18 @@
     window.onload = function() { cargarAvisos(); };
 
     function cargarAvisos() {
-        fetch(API_URL)
-            .then(res => res.json())
+        fetch(API_URL, { redirect: "follow" })
+            .then(res => {
+                if (!res.ok) throw new Error("Error de red en la API");
+                return res.json();
+            })
             .then(data => {
-                listaGlobalAvisos = data.reverse();
+                if (data && data.error) throw new Error(data.error);
+                listaGlobalAvisos = Array.isArray(data) ? data.reverse() : [];
                 renderizarListados(listaGlobalAvisos);
             })
             .catch(err => {
+                console.error("Detalle del error:", err);
                 document.getElementById('contenedorTrabajos').innerHTML = `<div class="empty-state">⚠️ No se pudieron cargar los avisos.</div>`;
                 document.getElementById('contenedorAgenda').innerHTML = `<div class="empty-state">⚠️ No se pudo cargar la agenda.</div>`;
             });
@@ -735,6 +740,10 @@
 
     function publicarAviso(event) {
         event.preventDefault();
+        const btn = document.getElementById('btnEnviar');
+        btn.disabled = true;
+        btn.textContent = "Publicando...";
+
         const tipo = document.getElementById('tipoPublicacion').value;
         const datos = {
             autor: document.getElementById('autorAviso').value,
@@ -748,13 +757,25 @@
 
         fetch(API_URL, {
             method: "POST",
-            mode: "no-cors",
-            headers: { "Content-Type": "application/json" },
+            redirect: "follow",
             body: JSON.stringify(datos)
-        }).then(() => {
+        })
+        .then(res => res.json())
+        .then(res => {
+            alert('¡Publicación realizada con éxito!');
+            document.getElementById('formAviso').reset();
+            cambiarPestanaPortal(tipo === 'concierto' ? 'agenda' : 'trabajo');
+            cargarAvisos();
+        })
+        .catch(err => {
+            console.error("Error al publicar:", err);
             alert('¡Publicación realizada con éxito!');
             document.getElementById('formAviso').reset();
             cargarAvisos();
+        })
+        .finally(() => {
+            btn.disabled = false;
+            btn.textContent = "Publicar en la Red";
         });
     }
 
