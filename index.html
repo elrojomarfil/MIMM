@@ -654,7 +654,7 @@
         document.getElementById('txtDetalleTarifario').innerText = detalle;
     }
 
-    // URL de la implementación vigente de Apps Script para Avisos y Agenda
+    // URL de la implementación vigente de Apps Script
     const API_URL = "https://script.google.com/macros/s/AKfycbzd6rwNpc74Vhb-OeJHPMRhdT91sTy5jNYzTLTXBJ4rHET6a-2n46z37Dqine7Q3pk/exec";
     let listaGlobalAvisos = [];
 
@@ -704,10 +704,10 @@
         let hayTrabajos = false, hayConciertos = false;
 
         datos.forEach(item => {
-            const esConcierto = (item.categoria || "").toLowerCase() === 'concierto';
+            const esConcierto = item.categoria === 'concierto';
             const card = document.createElement('div');
             card.className = esConcierto ? 'listing-card concierto' : 'listing-card';
-            card.setAttribute('data-cat', (item.categoria || 'trabajo').toLowerCase());
+            card.setAttribute('data-cat', item.categoria || 'trabajo');
             card.setAttribute('data-texto', `${item.autor || ''} ${item.titulo} ${item.zona} ${item.descripcion}`.toLowerCase());
 
             let telLimpio = (item.whatsapp || "").replace(/\D/g, '');
