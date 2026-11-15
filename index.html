@@ -661,21 +661,29 @@
     window.onload = function() { cargarAvisos(); };
 
     function cargarAvisos() {
-        fetch(API_URL, { redirect: "follow" })
-            .then(res => {
-                if (!res.ok) throw new Error("Error de red en la API");
-                return res.json();
-            })
-            .then(data => {
-                if (data && data.error) throw new Error(data.error);
-                listaGlobalAvisos = Array.isArray(data) ? data.reverse() : [];
-                renderizarListados(listaGlobalAvisos);
-            })
-            .catch(err => {
-                console.error("Detalle del error:", err);
-                document.getElementById('contenedorTrabajos').innerHTML = `<div class="empty-state">⚠️ No se pudieron cargar los avisos.</div>`;
-                document.getElementById('contenedorAgenda').innerHTML = `<div class="empty-state">⚠️ No se pudo cargar la agenda.</div>`;
-            });
+        // Callback global para JSONP (soluciona CORS en GitHub Pages)
+        window.callbackMIMM = function(data) {
+            if (data && data.error) {
+                console.error("Error desde Apps Script:", data.error);
+                document.getElementById('contenedorTrabajos').innerHTML = `<div class="empty-state">⚠️ ${data.error}</div>`;
+                document.getElementById('contenedorAgenda').innerHTML = `<div class="empty-state">⚠️ ${data.error}</div>`;
+                return;
+            }
+            listaGlobalAvisos = Array.isArray(data) ? data.reverse() : [];
+            renderizarListados(listaGlobalAvisos);
+        };
+
+        const scriptViejo = document.getElementById('jsonpScript');
+        if (scriptViejo) scriptViejo.remove();
+
+        const script = document.createElement('script');
+        script.id = 'jsonpScript';
+        script.src = `${API_URL}?callback=callbackMIMM`;
+        script.onerror = function() {
+            document.getElementById('contenedorTrabajos').innerHTML = `<div class="empty-state">⚠️ No se pudieron cargar los avisos.</div>`;
+            document.getElementById('contenedorAgenda').innerHTML = `<div class="empty-state">⚠️ No se pudo cargar la agenda.</div>`;
+        };
+        document.body.appendChild(script);
     }
 
     function renderizarListados(datos) {
