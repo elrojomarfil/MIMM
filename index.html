@@ -483,7 +483,7 @@
                     <button onclick="cerrarSesion()" class="btn-secondary" style="width: auto; padding: 8px 14px; font-size: 13px; border-radius: 8px; cursor:pointer;">Salir</button>
                 </div>
                 <h3>Solicitar Factura</h3>
-                <form id="form-google" method="POST" action="https://script.google.com/macros/s/AKfycbwAtbevSQEraMzpbwtxbDDCzZoqRUIplTpqySbfpnGf8QUYfBd6FyFfFsFJ0zrFR3GT/exec" target="hidden_iframe" onsubmit="procesarEnvioLocal(event)">
+                <form id="form-google" method="POST" action="https://script.google.com/macros/s/AKfycbzd6rwNpc74Vhb-OeJHPMRhdT91sTy5jNYzTLTXBJ4rHET6a-2n46z37Dqine7Q3pk/exec" target="hidden_iframe" onsubmit="procesarEnvioLocal(event)">
                     <input type="hidden" name="dni" id="hidden-dni">
                     <div class="group"><label>Nombre y Apellido del socio/a:</label><input type="text" name="nombre" id="fac-nombre" placeholder="Ej: Juan Pérez" required></div>
                     <div class="group"><label>CUIT/CUIL de la persona o institución destinataria:</label><input type="text" name="cuit" id="fac-cuit" placeholder="Ej: 30-71111111-9" required></div>
@@ -654,14 +654,14 @@
         document.getElementById('txtDetalleTarifario').innerText = detalle;
     }
 
-    // URL de la implementación vigente de Apps Script
+    // URL unificada de la implementación en Apps Script
     const API_URL = "https://script.google.com/macros/s/AKfycbzd6rwNpc74Vhb-OeJHPMRhdT91sTy5jNYzTLTXBJ4rHET6a-2n46z37Dqine7Q3pk/exec";
     let listaGlobalAvisos = [];
 
     window.onload = function() { cargarAvisos(); };
 
     function cargarAvisos() {
-        // Implementación con JSONP idéntica al sistema de facturación para evitar bloqueos de CORS
+        // Petición JSONP pasando el parámetro accion=avisos
         const callbackName = 'jsonp_avisos_cb_' + Math.round(100000 * Math.random());
         
         window[callbackName] = function(data) {
@@ -680,7 +680,7 @@
 
         const script = document.createElement('script');
         script.id = callbackName;
-        script.src = `${API_URL}?callback=${callbackName}`;
+        script.src = `${API_URL}?accion=avisos&callback=${callbackName}`;
         script.onerror = function() {
             delete window[callbackName];
             script.remove();
@@ -704,10 +704,10 @@
         let hayTrabajos = false, hayConciertos = false;
 
         datos.forEach(item => {
-            const esConcierto = item.categoria === 'concierto';
+            const esConcierto = (item.categoria || "").toLowerCase() === 'concierto';
             const card = document.createElement('div');
             card.className = esConcierto ? 'listing-card concierto' : 'listing-card';
-            card.setAttribute('data-cat', item.categoria || 'trabajo');
+            card.setAttribute('data-cat', (item.categoria || 'trabajo').toLowerCase());
             card.setAttribute('data-texto', `${item.autor || ''} ${item.titulo} ${item.zona} ${item.descripcion}`.toLowerCase());
 
             let telLimpio = (item.whatsapp || "").replace(/\D/g, '');
@@ -764,6 +764,7 @@
 
         const tipo = document.getElementById('tipoPublicacion').value;
         const datos = {
+            tipo: "aviso", // Identificador clave para que el script unificado sepa que va a la solapa Avisos
             autor: document.getElementById('autorAviso').value,
             titulo: document.getElementById('tituloAviso').value,
             categoria: tipo === 'concierto' ? 'concierto' : document.getElementById('tipoCat').value,
@@ -799,7 +800,6 @@
 
     let dniActual = "";
     const sociosValidos = ["12345678", "35123456", "40999888"];
-    const URL_SCRIPT_FACTURACION = "https://script.google.com/macros/s/AKfycbwAtbevSQEraMzpbwtxbDDCzZoqRUIplTpqySbfpnGf8QUYfBd6FyFfFsFJ0zrFR3GT/exec";
 
     function verificarSocio() {
         const dni = document.getElementById("dni-input").value.trim();
@@ -872,7 +872,8 @@
     function sincronizarHistorial() {
         const contenedor = document.getElementById("historial-lista");
         contenedor.innerHTML = "<p style='font-size: 15px; color: var(--text-muted);'>Sincronizando con la planilla...</p>";
-        fetch(`${URL_SCRIPT_FACTURACION}?dni=${dniActual}`, { method: "GET", redirect: "follow" })
+        // Utiliza la misma API_URL unificada, que al no llevar accion=avisos procesa el DNI de facturas
+        fetch(`${API_URL}?dni=${dniActual}`, { method: "GET", redirect: "follow" })
             .then(res => res.json())
             .then(data => {
                 if (!Array.isArray(data) || data.length === 0) {
