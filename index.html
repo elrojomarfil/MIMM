@@ -247,6 +247,8 @@
             margin-bottom: 8px;
             display: flex;
             justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
         }
         .listing-desc {
             font-size: 0.9rem;
@@ -376,7 +378,7 @@
             <input type="text" id="inputBuscador" class="search-input" placeholder="🔍 Buscar por nombre, banda, instrumento o zona..." oninput="filtrarContenido()">
         </div>
 
-        <!-- ORDEN DE PESTAÑAS: 1. Tarifario, 2. Facturación, 3. Bolsa, 4. Agenda, 5. Publicar -->
+        <!-- ORDEN DE PESTAÑAS: 1. Tarifario, 2. Facturación, 3. Bolsa de trabajo, 4. Agenda, 5. Publicar -->
         <div class="tabs">
             <button class="tab-btn active" type="button" onclick="cambiarPestanaPortal('tarifario')">💰 Tarifario</button>
             <button class="tab-btn" type="button" onclick="cambiarPestanaPortal('facturacion')">🧾 Facturación</button>
@@ -544,7 +546,7 @@
                         <option value="ofrezco">Ofrezco Servicios / Clases</option>
                     </select>
                 </div>
-                <div class="group" id="grupoFechaEvento" style="display: none;"><label for="fechaEvento">Fecha y Hora:</label><input type="text" id="fechaEvento"></div>
+                <div class="group" id="grupoFechaEvento" style="display: none;"><label for="fechaEvento">Fecha y Hora:</label><input type="text" id="fechaEvento" placeholder="Ej: Viernes 21 hs"></div>
                 <div class="group"><label id="labelZona" for="zonaAviso">Zona / Departamento:</label><input type="text" id="zonaAviso" required></div>
                 <div class="group"><label for="descAviso">Descripción y detalles:</label><textarea id="descAviso" required></textarea></div>
                 <div class="group"><label for="telAviso">WhatsApp de contacto:</label><input type="text" id="telAviso" required></div>
@@ -652,7 +654,8 @@
         document.getElementById('txtDetalleTarifario').innerText = detalle;
     }
 
-    const API_URL = "https://script.google.com/macros/s/AKfycbzCpYNJSTtjqkPfQkBm0HkVyfllk-eMnKjY5_pPCswHs-AcRVQY_qVdxHK5AVMa1vFZNQ/exec";
+    // Reemplazá aquí abajo con tu URL de Apps Script de Avisos
+    const API_URL = "PEGAR_AQUI_URL_APPS_SCRIPT_AVISOS";
     let listaGlobalAvisos = [];
 
     window.onload = function() { cargarAvisos(); };
@@ -687,10 +690,15 @@
             let telLimpio = (item.whatsapp || "").replace(/\D/g, '');
             const mensajeWa = encodeURIComponent(`Hola, me interesa tu publicación "${item.titulo}" vista en el MIMM.`);
 
+            let infoFecha = (esConcierto && item.fechaEvento) ? `<span>📅 ${item.fechaEvento}</span>` : '';
+
             card.innerHTML = `
                 <div class="listing-title">${item.titulo}</div>
                 <div class="listing-autor">👤 ${item.autor || 'Comunidad MIMM'}</div>
-                <div class="listing-meta"><span>📍 ${item.zona}</span></div>
+                <div class="listing-meta">
+                    <span>📍 ${item.zona}</span>
+                    ${infoFecha}
+                </div>
                 <div class="listing-desc">${item.descripcion}</div>
                 <a href="https://wa.me/${telLimpio}?text=${mensajeWa}" class="wa-btn" target="_blank">💬 Contactar por WhatsApp</a>
             `;
