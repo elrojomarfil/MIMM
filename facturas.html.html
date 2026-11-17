@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIMM - Módulo de Facturación</title>
+    <!-- Importación exclusiva de Urbanist -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-deep: #09090b;
+            --card-bg: rgba(24, 24, 27, 0.75); /* Efecto vidrio esmerilado oscuro */
+            --card-border: rgba(255, 255, 255, 0.1);
+            --primary-red: #ef4444;
+            --hover-red: #dc2626;
+            --accent-yellow: #facc15;
+            --text-light: #f4f4f5;
+            --text-muted: #a1a1aa;
+            --input-bg: rgba(9, 9, 11, 0.6);
+            --radius: 16px;
+        }
+
+        body {
+            font-family: 'Urbanist', sans-serif, system-ui;
+            background-color: var(--bg-deep);
+            /* Fondo con sutiles destellos difuminados en rojo y amarillo para potenciar el glassmorphism */
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(239, 68, 68, 0.12) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(250, 204, 21, 0.08) 0%, transparent 40%);
+            color: var(--text-light);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 620px;
+            margin: 20px auto;
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            padding: 32px;
+            border-radius: var(--radius);
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7);
+            transition: all 0.3s ease;
+        }
+
+        h2, h3 {
+            font-family: 'Urbanist', sans-serif;
+            color: var(--accent-yellow);
+        }
+
+        h2 { 
+            font-size: 1.8rem; 
+            margin-top: 0; 
+            margin-bottom: 22px; 
+            font-weight: 700; 
+            letter-spacing: -0.5px;
+            border-bottom: 2px solid var(--primary-red);
+            padding-bottom: 12px;
+        }
+        
+        h3 { font-size: 1.35rem; font-weight: 700; color: var(--text-light); }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 15px;
+            color: var(--text-light);
+        }
+
+        p {
+            font-size: 15px;
+            line-height: 1.5;
+            color: var(--text-muted);
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            box-sizing: border-box;
+            font-size: 15px;
+            font-family: 'Urbanist', sans-serif;
+            background-color: var(--input-bg);
+            color: var(--text-light);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input::placeholder, textarea::placeholder {
+            color: #71717a;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent-yellow);
+            box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.2);
+        }
+
+        textarea { resize: vertical; height: 100px; }
+
+        /* Botón principal en Rojo impactante con hover dinámico */
+        button {
+            background-color: var(--primary-red);
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-family: 'Urbanist', sans-serif;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            transition: background-color 0.2s, transform 0.15s, box-shadow 0.15s;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        button:hover {
+            background-color: var(--hover-red);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(239, 68, 68, 0.5);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background-color: #27272a !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            box-shadow: none !important;
+            color: var(--text-light) !important;
+        }
+        .btn-secondary:hover {
+            background-color: #3f3f46 !important;
+        }
+
+        .btn-warning-action {
+            background-color: var(--accent-yellow) !important;
+            color: #09090b !important;
+            box-shadow: 0 4px 12px rgba(250, 204, 21, 0.2) !important;
+        }
+        .btn-warning-action:hover {
+            background-color: #eab308 !important;
+        }
+
+        .hidden { display: none !important; }
+
+        .alert {
+            padding: 14px;
+            background-color: rgba(239, 68, 68, 0.15);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 10px;
+            margin-bottom: 18px;
+            font-size: 15px;
+        }
+
+        .history-card {
+            background: rgba(9, 9, 11, 0.5);
+            padding: 18px;
+            border-radius: 10px;
+            margin-bottom: 14px;
+            border-left: 5px solid var(--accent-yellow);
+            font-size: 15px;
+            line-height: 1.5;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-left-width: 5px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .history-card:hover {
+            transform: translateX(3px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            border-color: rgba(250, 204, 21, 0.3);
+        }
+
+        .badge-pendiente { 
+            color: #fef08a; 
+            font-weight: 700; 
+            background: rgba(250, 204, 21, 0.15); 
+            border: 1px solid rgba(250, 204, 21, 0.3);
+            padding: 4px 10px; 
+            border-radius: 6px; 
+            display: inline-block; 
+            font-size: 13px;
+        }
+
+        .badge-emitida { 
+            color: #86efac; 
+            font-weight: 700; 
+            background: rgba(34, 197, 94, 0.15); 
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            padding: 4px 10px; 
+            border-radius: 6px; 
+            display: inline-block; 
+            font-size: 13px;
+        }
+
+        hr {
+            margin: 32px 0;
+            border: 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Módulo de Facturación MIMM</h2>
+
+    <!-- PASO 1: Validación de Socio/a -->
+    <div id="auth-section">
+        <p style="margin-bottom: 22px;">Solo pueden facturar a través del MIMM las personas asociadas (socios/as con cuota al día).</p>
+        <div id="auth-error" class="alert hidden">DNI no encontrado o socio/a sin cuota al día.</div>
+        <div class="form-group">
+            <label for="dni-input">Ingresá tu Número de DNI:</label>
+            <input type="number" id="dni-input" placeholder="Ej: 35123456">
+        </div>
+        <button onclick="verificarSocio()">Continuar</button>
+    </div>
+
+    <!-- PASO 2: Panel de Facturación -->
+    <div id="app-section" class="hidden">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; background: rgba(0,0,0,0.3); padding: 12px 16px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05);">
+            <span id="socio-welcome" style="font-weight: 700; color: var(--accent-yellow); font-size: 15px;"></span>
+            <button onclick="cerrarSesion()" class="btn-secondary" style="width: auto; padding: 8px 14px; font-size: 13px;">Salir</button>
+        </div>
+
+        <h3>Solicitar Factura</h3>
+
+        <form id="form-google" method="POST" action="https://script.google.com/macros/s/AKfycbwAtbevSQEraMzpbwtxbDDCzZoqRUIplTpqySbfpnGf8QUYfBd6FyFfFsFJ0zrFR3GT/exec" target="hidden_iframe" onsubmit="procesarEnvioLocal(event)">
+            
+            <input type="hidden" name="dni" id="hidden-dni">
+            
+            <div class="form-group">
+                <label>Nombre y Apellido del socio/a:</label>
+                <input type="text" name="nombre" id="fac-nombre" placeholder="Ej: Juan Pérez" required>
+            </div>
+            
+            <div class="form-group">
+                <label>CUIT/CUIL de la persona o institución destinataria:</label>
+                <input type="text" name="cuit" id="fac-cuit" placeholder="Ej: 30-71111111-9" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Detalle de facturación (Trabajo realizado, lugar, fecha, expte., etc.):</label>
+                <textarea name="detalle" id="fac-detalle" placeholder="Ej: Honorarios por show en vivo..." required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Monto total a facturar ($):</label>
+                <input type="number" name="monto" id="fac-monto" placeholder="Ej: 50000" required>
+            </div>
+
+            <div class="form-group">
+                <label>Correo electrónico donde debe ser enviada la factura:</label>
+                <input type="email" name="correo" id="fac-correo" placeholder="Ej: dependencia@solicitante.com" required>
+            </div>
+
+            <button type="submit">Enviar Solicitud</button>
+        </form>
+
+        <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
+
+        <hr>
+
+        <!-- SECCIÓN DE HISTORIAL CON LOS DOS BOTONES -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
+            <h3 style="margin: 0;">Mis Solicitudes y Estados</h3>
+            <div style="display: flex; gap: 8px;">
+                <button onclick="sincronizarHistorial()" class="btn-warning-action" style="width: auto; padding: 8px 14px; font-size: 13px;">Actualizar Estados</button>
+                <button onclick="limpiarHistorial()" class="btn-secondary" style="width: auto; padding: 8px 14px; font-size: 13px; color: #fca5a5 !important;" title="Borrar historial local">Borrar</button>
+            </div>
+        </div>
+        <div id="historial-lista"><p style='font-size: 15px;'>Cargando solicitudes...</p></div>
+    </div>
+</div>
+
+<script>
+    let dniActual = "";
+    const sociosValidos = ["12345678", "35123456", "40999888"];
+    const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbwAtbevSQEraMzpbwtxbDDCzZoqRUIplTpqySbfpnGf8QUYfBd6FyFfFsFJ0zrFR3GT/exec";
+
+    function verificarSocio() {
+        const dni = document.getElementById("dni-input").value.trim();
+        const errorBox = document.getElementById("auth-error");
+
+        if (sociosValidos.includes(dni)) {
+            dniActual = dni;
+            document.getElementById("hidden-dni").value = dni;
+            errorBox.classList.add("hidden");
+            document.getElementById("auth-section").classList.add("hidden");
+            document.getElementById("app-section").classList.remove("hidden");
+            document.getElementById("socio-welcome").innerText = `Socio/a DNI: ${dni}`;
+            sincronizarHistorial();
+        } else {
+            errorBox.classList.remove("hidden");
+        }
+    }
+
+    function cerrarSesion() {
+        dniActual = "";
+        document.getElementById("app-section").classList.add("hidden");
+        document.getElementById("auth-section").classList.remove("hidden");
+        document.getElementById("dni-input").value = "";
+        document.getElementById("fac-nombre").value = "";
+    }
+
+    function procesarEnvioLocal(event) {
+        const nombre = document.getElementById("fac-nombre").value.trim();
+        const cuit = document.getElementById("fac-cuit").value.trim();
+        const detalle = document.getElementById("fac-detalle").value.trim();
+        const monto = document.getElementById("fac-monto").value.trim();
+        const correo = document.getElementById("fac-correo").value.trim();
+
+        const nuevaFactura = {
+            nombre,
+            dni: dniActual,
+            cuit,
+            detalle,
+            monto,
+            correo,
+            fecha: new Date().toLocaleDateString(),
+            estado: "Pendiente de emisión 🟡"
+        };
+
+        let misFacturas = JSON.parse(localStorage.getItem("mimm_facturas_" + dniActual)) || [];
+        misFacturas.push(nuevaFactura);
+        localStorage.setItem("mimm_facturas_" + dniActual, JSON.stringify(misFacturas));
+
+        setTimeout(() => {
+            document.getElementById("fac-cuit").value = "";
+            document.getElementById("fac-detalle").value = "";
+            document.getElementById("fac-monto").value = "";
+            document.getElementById("fac-correo").value = "";
+            alert("¡Solicitud registrada con éxito!");
+            sincronizarHistorial();
+        }, 800);
+    }
+
+    function sincronizarHistorial() {
+        const contenedor = document.getElementById("historial-lista");
+        contenedor.innerHTML = "<p style='font-size: 15px;'>Sincronizando con la planilla...</p>";
+
+        fetch(`${URL_SCRIPT}?dni=${dniActual}`, { method: "GET", redirect: "follow" })
+            .then(response => response.json())
+            .then(data => {
+                if (!Array.isArray(data) || data.length === 0) {
+                    let misFacturasLocales = JSON.parse(localStorage.getItem("mimm_facturas_" + dniActual)) || [];
+                    if (misFacturasLocales.length > 0) {
+                        renderizarLista(misFacturasLocales);
+                    } else {
+                        contenedor.innerHTML = "<p style='font-size: 15px;'>No tenés solicitudes registradas.</p>";
+                    }
+                    return;
+                }
+
+                localStorage.setItem("mimm_facturas_" + dniActual, JSON.stringify(data));
+                renderizarLista(data);
+            })
+            .catch(error => {
+                let misFacturas = JSON.parse(localStorage.getItem("mimm_facturas_" + dniActual)) || [];
+                renderizarLista(misFacturas);
+            });
+    }
+
+    function limpiarHistorial() {
+        if(confirm("¿Estás seguro de borrar el historial guardado en este dispositivo?")) {
+            localStorage.removeItem("mimm_facturas_" + dniActual);
+            cargarHistorialLocalVacio();
+        }
+    }
+
+    function cargarHistorialLocalVacio() {
+        const contenedor = document.getElementById("historial-lista");
+        contenedor.innerHTML = "<p style='font-size: 15px;'>No tenés solicitudes registradas.</p>";
+    }
+
+    function renderizarLista(facturas) {
+        const contenedor = document.getElementById("historial-lista");
+        if (!facturas || facturas.length === 0) {
+            contenedor.innerHTML = "<p style='font-size: 15px;'>No tenés solicitudes registradas.</p>";
+            return;
+        }
+
+        contenedor.innerHTML = "";
+        let copiaInvertida = [...facturas].reverse();
+        
+        copiaInvertida.forEach(fac => {
+            let estadoStr = (fac.estado || "").toLowerCase();
+            let esEmitida = estadoStr.includes("emitid") || estadoStr.includes("aprob");
+            let claseEstado = esEmitida ? "badge-emitida" : "badge-pendiente";
+
+            contenedor.innerHTML += `
+                <div class="history-card">
+                    <strong style="color: var(--accent-yellow);">Socio/a:</strong> ${fac.nombre} (DNI: ${fac.dni})<br>
+                    <strong>Destinatario (CUIT):</strong> ${fac.cuit} <br>
+                    <strong>Detalle:</strong> ${fac.detalle} <br>
+                    <strong>Monto:</strong> <span style="color: var(--accent-yellow); font-weight:700;">$${fac.monto}</span> <br>
+                    <strong>Enviar a:</strong> ${fac.correo} <br>
+                    <strong>Fecha:</strong> ${fac.fecha} <br>
+                    <strong>Estado:</strong> <span class="${claseEstado}">${fac.estado}</span>
+                </div>
+            `;
+        });
+    }
+</script>
+
+</body>
+</html>
