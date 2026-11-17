@@ -89,7 +89,7 @@
             box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.2);
         }
 
-        /* Sistema de pestañas en el orden estricto solicitado */
+        /* Sistema de pestañas ordenadas estrictamente */
         .tabs {
             display: flex;
             gap: 4px;
@@ -242,12 +242,12 @@
     <h2>MIMM - Comunidad Musical</h2>
     <div class="subtitle">Portal Oficial de la Música Mendocina</div>
 
-    <!-- Buscador General (Se oculta en Tarifario, Facturación y Publicar) -->
+    <!-- Buscador General (Se muestra solo en Bolsa de Trabajo y Agenda) -->
     <div class="search-container" id="buscadorContainer" style="display: none;">
         <input type="text" id="inputBuscador" class="search-input" placeholder="🔍 Buscar por nombre, banda, instrumento o zona..." oninput="filtrarContenido()">
     </div>
 
-    <!-- Pestañas en el orden estricto pedido: Tarifario, Facturación, Bolsa de trabajo, Agenda, Publicar -->
+    <!-- Pestañas ordenadas: Tarifario, Facturación, Bolsa de trabajo, Agenda, Publicar -->
     <div class="tabs">
         <button class="tab-btn active" type="button" onclick="cambiarPestana('tarifario')">💰 Tarifario</button>
         <button class="tab-btn" type="button" onclick="cambiarPestana('facturacion')">🧾 Facturación</button>
@@ -256,14 +256,14 @@
         <button class="tab-btn" type="button" onclick="cambiarPestana('publicar')">➕ Publicar</button>
     </div>
 
-    <!-- PESTAÑA 1: TARIFARIO (Iframe limpio apuntando a su archivo) -->
+    <!-- PESTAÑA 1: TARIFARIO -->
     <div id="pestana-tarifario" class="tab-content active">
         <div style="background: rgba(9, 9, 11, 0.6); border-radius: 10px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1);">
             <iframe src="tarifario.html" style="width: 100%; height: 750px; border: none;" title="Tarifario Oficial MIMM"></iframe>
         </div>
     </div>
 
-    <!-- PESTAÑA 2: FACTURACIÓN (Iframe limpio apuntando a tu archivo facturas.html) -->
+    <!-- PESTAÑA 2: FACTURACIÓN -->
     <div id="pestana-facturacion" class="tab-content">
         <div style="background: rgba(9, 9, 11, 0.6); border-radius: 10px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1);">
             <iframe src="facturas.html" style="width: 100%; height: 750px; border: none;" title="Módulo de Facturación MIMM"></iframe>
@@ -411,36 +411,37 @@
         }
     }
 
-    // Carga de avisos mediante JSONP para evitar bloqueos CORS
+    // Carga de avisos mediante fetch directo con redirect: follow
     function cargarAvisos() {
-        const callbackName = 'jsonp_avisos_cb_' + Math.round(100000 * Math.random());
         const contTrabajos = document.getElementById('contenedorTrabajos');
         const contAgenda = document.getElementById('contenedorAgenda');
+        
+        contTrabajos.innerHTML = `<div class="loading-state">🔄 Conectando con la base de datos...</div>`;
+        contAgenda.innerHTML = `<div class="loading-state">🔄 Cargando agenda de conciertos...</div>`;
 
-        window[callbackName] = function(data) {
-            delete window[callbackName];
-            const scriptTag = document.getElementById(callbackName);
-            if (scriptTag) scriptTag.remove();
-
+        fetch(`${API_URL}?accion=avisos`, {
+            method: "GET",
+            redirect: "follow"
+        })
+        .then(response => response.json())
+        .then(data => {
             if (Array.isArray(data)) {
                 listaGlobalAvisos = data.reverse();
                 renderizarListados(listaGlobalAvisos);
             } else {
-                contTrabajos.innerHTML = `<div class="empty-state">📭 No hay avisos laborales publicados.</div>`;
-                contAgenda.innerHTML = `<div class="empty-state">🎸 No hay conciertos agendados.</div>`;
+                mostrarEstadoVacio();
             }
-        };
-
-        const script = document.createElement('script');
-        script.id = callbackName;
-        script.src = `${API_URL}?accion=avisos&callback=${callbackName}`;
-        script.onerror = function() {
-            delete window[callbackName];
-            script.remove();
+        })
+        .catch(error => {
+            console.error("Error al cargar avisos:", error);
             contTrabajos.innerHTML = `<div class="empty-state" style="color: #ef4444;">⚠️ No se pudieron cargar los avisos.</div>`;
             contAgenda.innerHTML = `<div class="empty-state" style="color: #ef4444;">⚠️ No se pudo cargar la agenda.</div>`;
-        };
-        document.body.appendChild(script);
+        });
+    }
+
+    function mostrarEstadoVacio() {
+        document.getElementById('contenedorTrabajos').innerHTML = `<div class="empty-state">📭 No hay avisos laborales publicados.</div>`;
+        document.getElementById('contenedorAgenda').innerHTML = `<div class="empty-state">🎸 No hay conciertos agendados.</div>`;
     }
 
     function renderizarListados(datos) {
@@ -515,7 +516,7 @@
 
         const tipo = document.getElementById('tipoPublicacion').value;
         const datos = {
-            tipo: "aviso", // Clave para que el backend sepa que es un aviso
+            tipo: "aviso",
             autor: document.getElementById('autorAviso').value,
             titulo: document.getElementById('tituloAviso').value,
             categoria: tipo === 'concierto' ? 'concierto' : document.getElementById('tipoCat').value,
