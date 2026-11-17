@@ -69,7 +69,7 @@
             margin-bottom: 22px;
         }
 
-        /* Sistema de pestañas en el orden correcto */
+        /* Sistema de pestañas ordenadas estrictamente */
         .tabs {
             display: flex;
             gap: 4px;
@@ -82,12 +82,12 @@
         }
         .tab-btn {
             flex: 1;
-            min-width: 85px;
+            min-width: 80px;
             padding: 10px 4px;
             border: none;
             background: transparent;
             font-weight: 700;
-            font-size: 0.72rem;
+            font-size: 0.7rem;
             font-family: 'Urbanist', sans-serif;
             color: var(--text-muted);
             border-radius: 8px;
@@ -105,7 +105,7 @@
             background: rgba(255, 255, 255, 0.05);
         }
 
-        /* Contenedor del Módulo (Iframe limpio y aislado) */
+        /* Contenedor del Módulo (Iframe) */
         .module-frame-container {
             width: 100%;
             background: rgba(9, 9, 11, 0.6);
@@ -135,16 +135,16 @@
     <h2>MIMM - Comunidad Musical</h2>
     <div class="subtitle">Portal Oficial de la Música Mendocina</div>
 
-    <!-- Pestañas ordenadas estrictamente de izquierda a derecha -->
+    <!-- Pestañas ordenadas: Tarifario, Facturación, Bolsa de trabajo, Agenda, Publicar -->
     <div class="tabs">
         <button class="tab-btn active" type="button" onclick="cargarModulo('tarifario.html', this)">💰 Tarifario</button>
-        <button class="tab-btn" type="button" onclick="cargarModulo('facturacion.html', this)">🧾 Facturación</button>
+        <button class="tab-btn" type="button" onclick="cargarModulo('facturas.html', this)">🧾 Facturación</button>
         <button class="tab-btn" type="button" onclick="cargarModulo('trabajo.html', this)">📋 Bolsa de trabajo</button>
         <button class="tab-btn" type="button" onclick="cargarModulo('agenda.html', this)">🎸 Agenda</button>
         <button class="tab-btn" type="button" onclick="cargarModulo('publicar.html', this)">➕ Publicar</button>
     </div>
 
-    <!-- Contenedor modular por Iframe (inicia en tarifario.html acorde a la primera pestaña activa) -->
+    <!-- Contenedor modular por Iframe -->
     <div class="module-frame-container">
         <iframe id="moduloFrame" src="tarifario.html" title="Módulo MIMM"></iframe>
     </div>
@@ -156,11 +156,8 @@
 
 <script>
     function cargarModulo(archivoHtml, boton) {
-        // Actualizar clases activas de las pestañas
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         boton.classList.add('active');
-
-        // Cambiar la fuente del iframe al archivo correspondiente
         document.getElementById('moduloFrame').src = archivoHtml;
     }
 </script>
