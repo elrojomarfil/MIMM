@@ -355,12 +355,21 @@
 </div>
 
 <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbzd6rwNpc74Vhb-OeJHPMRhdT91sTy5jNYzTLTXBJ4rHET6a-2n46z37Dqine7Q3pk/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbx_CVZ3dNCLh7ToFu2Y44jkLrRpVPpSrUyZPFDsT3rYpxBIfiF6JgjVftXbWl_Oy9b-9g/exec";
     let listaGlobalAvisos = [];
 
     window.onload = function() {
         cargarAvisos();
     };
+
+    // Escapa HTML para que nadie pueda inyectar código desde un aviso
+    function esc(s) {
+        return String(s == null ? "" : s)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;");
+    }
 
     function cambiarPestana(pestana) {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -428,7 +437,13 @@
 
             if (Array.isArray(data) && data.length > 0) {
                 listaGlobalAvisos = data.reverse();
-                renderizarListados(listaGlobalAvisos);
+                try {
+                    renderizarListados(listaGlobalAvisos);
+                } catch (err) {
+                    console.error("Error al dibujar las tarjetas:", err);
+                    contTrabajos.innerHTML = `<div class="empty-state" style="color: #ef4444;">⚠️ Error al mostrar los avisos.</div>`;
+                    contAgenda.innerHTML = `<div class="empty-state" style="color: #ef4444;">⚠️ Error al mostrar la agenda.</div>`;
+                }
             } else {
                 mostrarEstadoVacio();
             }
@@ -463,25 +478,32 @@
         let hayConciertos = false;
 
         datos.forEach(item => {
-            const esConcierto = (item.categoria || "").toLowerCase() === 'concierto';
+            const categoria = String(item.categoria || 'trabajo').toLowerCase().trim();
+            const esConcierto = categoria === 'concierto';
             const card = document.createElement('div');
             card.className = esConcierto ? 'listing-card concierto' : 'listing-card';
-            card.setAttribute('data-cat', (item.categoria || 'trabajo').toLowerCase());
-            card.setAttribute('data-texto', `${item.autor || ''} ${item.titulo} ${item.zona} ${item.descripcion}`.toLowerCase());
+            card.setAttribute('data-cat', categoria);
+            card.setAttribute('data-texto', `${item.autor || ''} ${item.titulo || ''} ${item.zona || ''} ${item.descripcion || ''}`.toLowerCase());
 
-            let telLimpio = (item.whatsapp || "").replace(/\D/g, '');
+            // El WhatsApp puede llegar como número: se convierte a texto antes de limpiar
+            let telLimpio = String(item.whatsapp || "").replace(/\D/g, '');
+            if (telLimpio.length === 10) telLimpio = "549" + telLimpio;
+
             const mensajeWa = encodeURIComponent(`Hola ${item.autor || 'colega'}, me interesa tu publicación "${item.titulo}" vista en el MIMM.`);
-            let infoFecha = (esConcierto && item.fechaEvento) ? `<span>📅 ${item.fechaEvento}</span>` : '';
+            const infoFecha = (esConcierto && item.fechaEvento) ? `<span>📅 ${esc(item.fechaEvento)}</span>` : '';
+            const botonWa = telLimpio
+                ? `<a href="https://wa.me/${telLimpio}?text=${mensajeWa}" class="wa-btn" target="_blank" rel="noopener">💬 Contactar por WhatsApp</a>`
+                : '';
 
             card.innerHTML = `
-                <div class="listing-title">${item.titulo}</div>
-                <div class="listing-autor">👤 Publicado por: ${item.autor || 'Comunidad MIMM'}</div>
+                <div class="listing-title">${esc(item.titulo)}</div>
+                <div class="listing-autor">👤 Publicado por: ${esc(item.autor || 'Comunidad MIMM')}</div>
                 <div class="listing-meta">
-                    <span>📍 ${item.zona}</span>
+                    <span>📍 ${esc(item.zona)}</span>
                     ${infoFecha}
                 </div>
-                <div class="listing-desc">${item.descripcion}</div>
-                <a href="https://wa.me/${telLimpio}?text=${mensajeWa}" class="wa-btn" target="_blank">💬 Contactar por WhatsApp</a>
+                <div class="listing-desc">${esc(item.descripcion)}</div>
+                ${botonWa}
             `;
 
             if (esConcierto) {
@@ -535,22 +557,22 @@
             fechaEvento: tipo === 'concierto' ? document.getElementById('fechaEvento').value : ''
         };
 
+        // mode "no-cors": la petición se envía igual y evitamos el error CORS al leer la respuesta
         fetch(API_URL, {
             method: "POST",
-            redirect: "follow",
+            mode: "no-cors",
             body: JSON.stringify(datos)
         })
         .then(() => {
             alert('¡Publicación realizada con éxito en la red del MIMM!');
             document.getElementById('formAviso').reset();
+            actualizarFormulario();
             cambiarPestana(tipo === 'concierto' ? 'agenda' : 'trabajo');
             setTimeout(cargarAvisos, 1200);
         })
         .catch(error => {
             console.error("Error:", error);
-            alert('¡Publicación realizada con éxito!');
-            document.getElementById('formAviso').reset();
-            setTimeout(cargarAvisos, 1200);
+            alert('No se pudo publicar. Revisá tu conexión e intentá de nuevo.');
         })
         .finally(() => {
             btnEnviar.disabled = false;
