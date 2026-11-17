@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MIMM - Portal de la Comunidad Musical de Mendoza</title>
+    <title>MIMM - APP de la Comunidad Musical de Mendoza</title>
     
     <!-- Fuente Urbanist y PWA -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -247,7 +247,7 @@
         <input type="text" id="inputBuscador" class="search-input" placeholder="🔍 Buscar por nombre, banda, instrumento o zona..." oninput="filtrarContenido()">
     </div>
 
-    <!-- Pestañas ordenadas: Tarifario, Facturación, Bolsa de trabajo, Agenda, Publicar -->
+    <!-- Pestañas ordenadas estrictamente -->
     <div class="tabs">
         <button class="tab-btn active" type="button" onclick="cambiarPestana('tarifario')">💰 Tarifario</button>
         <button class="tab-btn" type="button" onclick="cambiarPestana('facturacion')">🧾 Facturación</button>
@@ -411,7 +411,7 @@
         }
     }
 
-    // Carga de avisos mediante fetch directo con redirect: follow
+    // Carga de avisos mediante JSONP para evitar bloqueos CORS en sitios estáticos
     function cargarAvisos() {
         const contTrabajos = document.getElementById('contenedorTrabajos');
         const contAgenda = document.getElementById('contenedorAgenda');
@@ -419,24 +419,33 @@
         contTrabajos.innerHTML = `<div class="loading-state">🔄 Conectando con la base de datos...</div>`;
         contAgenda.innerHTML = `<div class="loading-state">🔄 Cargando agenda de conciertos...</div>`;
 
-        fetch(`${API_URL}?accion=avisos`, {
-            method: "GET",
-            redirect: "follow"
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (Array.isArray(data)) {
+        const callbackName = 'jsonp_avisos_cb_' + Math.round(100000 * Math.random());
+
+        window[callbackName] = function(data) {
+            delete window[callbackName];
+            const scriptTag = document.getElementById(callbackName);
+            if (scriptTag) scriptTag.remove();
+
+            if (Array.isArray(data) && data.length > 0) {
                 listaGlobalAvisos = data.reverse();
                 renderizarListados(listaGlobalAvisos);
             } else {
                 mostrarEstadoVacio();
             }
-        })
-        .catch(error => {
-            console.error("Error al cargar avisos:", error);
+        };
+
+        const script = document.createElement('script');
+        script.id = callbackName;
+        script.src = `${API_URL}?accion=avisos&callback=${callbackName}`;
+        
+        script.onerror = function() {
+            delete window[callbackName];
+            script.remove();
             contTrabajos.innerHTML = `<div class="empty-state" style="color: #ef4444;">⚠️ No se pudieron cargar los avisos.</div>`;
             contAgenda.innerHTML = `<div class="empty-state" style="color: #ef4444;">⚠️ No se pudo cargar la agenda.</div>`;
-        });
+        };
+
+        document.body.appendChild(script);
     }
 
     function mostrarEstadoVacio() {
@@ -535,13 +544,13 @@
             alert('¡Publicación realizada con éxito en la red del MIMM!');
             document.getElementById('formAviso').reset();
             cambiarPestana(tipo === 'concierto' ? 'agenda' : 'trabajo');
-            setTimeout(cargarAvisos, 1000);
+            setTimeout(cargarAvisos, 1200);
         })
         .catch(error => {
             console.error("Error:", error);
             alert('¡Publicación realizada con éxito!');
             document.getElementById('formAviso').reset();
-            setTimeout(cargarAvisos, 1000);
+            setTimeout(cargarAvisos, 1200);
         })
         .finally(() => {
             btnEnviar.disabled = false;
