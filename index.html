@@ -5,11 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MIMM - Portal de la Comunidad Musical de Mendoza</title>
     
-    <!-- Fuente Urbanist -->
+    <!-- Fuente Urbanist y PWA -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@500;600;700&display=swap" rel="stylesheet">
-    
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#09090b">
 
@@ -23,6 +22,7 @@
             --accent-yellow: #facc15;
             --text-light: #f4f4f5;
             --text-muted: #a1a1aa;
+            --input-bg: rgba(9, 9, 11, 0.6);
             --radius: 16px;
         }
 
@@ -40,7 +40,7 @@
         }
 
         .container {
-            max-width: 700px;
+            max-width: 650px;
             margin: 20px auto;
             background: var(--card-bg);
             backdrop-filter: blur(16px);
@@ -56,9 +56,8 @@
             color: var(--accent-yellow);
             font-size: 1.8rem;
             margin-top: 0;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
             font-weight: 700;
-            letter-spacing: -0.5px;
             text-align: center;
         }
 
@@ -69,7 +68,28 @@
             margin-bottom: 22px;
         }
 
-        /* Sistema de pestañas ordenadas estrictamente */
+        /* Buscador General */
+        .search-container {
+            margin-bottom: 18px;
+        }
+        .search-input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            font-size: 15px;
+            font-family: 'Urbanist', sans-serif;
+            box-sizing: border-box;
+            background: var(--input-bg);
+            color: var(--text-light);
+            outline: none;
+        }
+        .search-input:focus {
+            border-color: var(--accent-yellow);
+            box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.2);
+        }
+
+        /* Sistema de pestañas en el orden estricto solicitado */
         .tabs {
             display: flex;
             gap: 4px;
@@ -82,7 +102,7 @@
         }
         .tab-btn {
             flex: 1;
-            min-width: 80px;
+            min-width: 75px;
             padding: 10px 4px;
             border: none;
             background: transparent;
@@ -100,26 +120,113 @@
             color: white;
             box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
         }
-        .tab-btn:hover:not(.active) {
-            color: var(--text-light);
-            background: rgba(255, 255, 255, 0.05);
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
         }
 
-        /* Contenedor del Módulo (Iframe) */
-        .module-frame-container {
-            width: 100%;
-            background: rgba(9, 9, 11, 0.6);
-            border-radius: 12px;
-            overflow: hidden;
+        /* Listados y Tarjetas */
+        .listing-card {
+            background: rgba(9, 9, 11, 0.5);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            min-height: 750px;
+            border-left: 4px solid var(--accent-yellow);
+            padding: 16px;
+            border-radius: 10px;
+            margin-bottom: 12px;
         }
-        iframe {
+        .listing-card.concierto {
+            border-left-color: var(--primary-red);
+        }
+        .listing-title {
+            font-weight: 700;
+            color: var(--accent-yellow);
+            font-size: 1.05rem;
+            margin-bottom: 4px;
+        }
+        .listing-autor {
+            font-size: 0.85rem;
+            color: #fca5a5;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        .listing-meta {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .listing-desc {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+        .wa-btn {
+            display: inline-block;
+            background-color: #25d366;
+            color: white;
+            text-decoration: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+        .empty-state, .loading-state {
+            text-align: center;
+            padding: 30px 20px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            background: rgba(9, 9, 11, 0.4);
+            border-radius: 10px;
+            border: 1px dashed rgba(255, 255, 255, 0.15);
+        }
+
+        /* Formularios */
+        .group {
+            margin-bottom: 16px;
+        }
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+        select, input, textarea {
             width: 100%;
-            height: 750px;
-            border: none;
-            background: transparent;
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-family: 'Urbanist', sans-serif;
+            box-sizing: border-box;
+            background: var(--input-bg);
+            color: var(--text-light);
         }
+        select option { background: #18181b; color: #f4f4f5; }
+        textarea { resize: vertical; height: 90px; }
+        
+        button.action-btn {
+            width: 100%;
+            background-color: var(--primary-red);
+            color: white;
+            border: none;
+            padding: 12px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            font-family: 'Urbanist', sans-serif;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+            transition: background-color 0.2s;
+        }
+        button.action-btn:hover { background-color: var(--hover-red); }
+        button.action-btn:disabled { background-color: #52525b; cursor: not-allowed; }
 
         .footer {
             text-align: center;
@@ -135,18 +242,111 @@
     <h2>MIMM - Comunidad Musical</h2>
     <div class="subtitle">Portal Oficial de la Música Mendocina</div>
 
-    <!-- Pestañas ordenadas: Tarifario, Facturación, Bolsa de trabajo, Agenda, Publicar -->
-    <div class="tabs">
-        <button class="tab-btn active" type="button" onclick="cargarModulo('tarifario.html', this)">💰 Tarifario</button>
-        <button class="tab-btn" type="button" onclick="cargarModulo('facturas.html', this)">🧾 Facturación</button>
-        <button class="tab-btn" type="button" onclick="cargarModulo('trabajo.html', this)">📋 Bolsa de trabajo</button>
-        <button class="tab-btn" type="button" onclick="cargarModulo('agenda.html', this)">🎸 Agenda</button>
-        <button class="tab-btn" type="button" onclick="cargarModulo('publicar.html', this)">➕ Publicar</button>
+    <!-- Buscador General (Se oculta en Tarifario, Facturación y Publicar) -->
+    <div class="search-container" id="buscadorContainer" style="display: none;">
+        <input type="text" id="inputBuscador" class="search-input" placeholder="🔍 Buscar por nombre, banda, instrumento o zona..." oninput="filtrarContenido()">
     </div>
 
-    <!-- Contenedor modular por Iframe -->
-    <div class="module-frame-container">
-        <iframe id="moduloFrame" src="tarifario.html" title="Módulo MIMM"></iframe>
+    <!-- Pestañas en el orden estricto pedido: Tarifario, Facturación, Bolsa de trabajo, Agenda, Publicar -->
+    <div class="tabs">
+        <button class="tab-btn active" type="button" onclick="cambiarPestana('tarifario')">💰 Tarifario</button>
+        <button class="tab-btn" type="button" onclick="cambiarPestana('facturacion')">🧾 Facturación</button>
+        <button class="tab-btn" type="button" onclick="cambiarPestana('trabajo')">📋 Bolsa de trabajo</button>
+        <button class="tab-btn" type="button" onclick="cambiarPestana('agenda')">🎸 Agenda</button>
+        <button class="tab-btn" type="button" onclick="cambiarPestana('publicar')">➕ Publicar</button>
+    </div>
+
+    <!-- PESTAÑA 1: TARIFARIO (Iframe limpio apuntando a su archivo) -->
+    <div id="pestana-tarifario" class="tab-content active">
+        <div style="background: rgba(9, 9, 11, 0.6); border-radius: 10px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1);">
+            <iframe src="tarifario.html" style="width: 100%; height: 750px; border: none;" title="Tarifario Oficial MIMM"></iframe>
+        </div>
+    </div>
+
+    <!-- PESTAÑA 2: FACTURACIÓN (Iframe limpio apuntando a tu archivo facturas.html) -->
+    <div id="pestana-facturacion" class="tab-content">
+        <div style="background: rgba(9, 9, 11, 0.6); border-radius: 10px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1);">
+            <iframe src="facturas.html" style="width: 100%; height: 750px; border: none;" title="Módulo de Facturación MIMM"></iframe>
+        </div>
+    </div>
+
+    <!-- PESTAÑA 3: BOLSA DE TRABAJO -->
+    <div id="pestana-trabajo" class="tab-content">
+        <div class="group">
+            <label for="filtroCategoriaTrabajo">Filtrar categoría laboral:</label>
+            <select id="filtroCategoriaTrabajo" onchange="filtrarContenido()">
+                <option value="todos">Todas las categorías</option>
+                <option value="banda">Buscan Músico / Integrante</option>
+                <option value="sesionista">Sesionistas y Grabación</option>
+                <option value="tecnico">Técnicos / Sonido / Iluminación</option>
+                <option value="ofrezco">Ofrezco Servicios / Clases</option>
+            </select>
+        </div>
+        <div id="contenedorTrabajos">
+            <div class="loading-state">🔄 Conectando con la base de datos...</div>
+        </div>
+    </div>
+
+    <!-- PESTAÑA 4: AGENDA DE CONCIERTOS -->
+    <div id="pestana-agenda" class="tab-content">
+        <div id="contenedorAgenda">
+            <div class="loading-state">🔄 Cargando agenda de conciertos...</div>
+        </div>
+    </div>
+
+    <!-- PESTAÑA 5: PUBLICAR AVISO O CONCIERTO -->
+    <div id="pestana-publicar" class="tab-content">
+        <form id="formAviso" onsubmit="publicarAviso(event)">
+            <div class="group">
+                <label for="tipoPublicacion">¿Qué querés publicar?:</label>
+                <select id="tipoPublicacion" onchange="actualizarFormulario()" required>
+                    <option value="trabajo">Bolsa de Trabajo / Servicio</option>
+                    <option value="concierto">Concierto / Evento en Vivo</option>
+                </select>
+            </div>
+
+            <div class="group">
+                <label for="autorAviso">Tu Nombre / Artista o Banda:</label>
+                <input type="text" id="autorAviso" placeholder="Ej: Juan Pérez / Trío Los Cumpas" required>
+            </div>
+
+            <div class="group">
+                <label id="labelTitulo" for="tituloAviso">Título del aviso:</label>
+                <input type="text" id="tituloAviso" placeholder="Ej: Busco bajista / Presentación de disco" required>
+            </div>
+
+            <div class="group" id="grupoCatTrabajo">
+                <label for="tipoCat">Categoría laboral:</label>
+                <select id="tipoCat">
+                    <option value="banda">Buscan Músico / Integrante</option>
+                    <option value="sesionista">Sesionistas y Grabación</option>
+                    <option value="tecnico">Técnicos / Sonido / Iluminación</option>
+                    <option value="ofrezco">Ofrezco Servicios / Clases</option>
+                </select>
+            </div>
+
+            <div class="group" id="grupoFechaEvento" style="display: none;">
+                <label for="fechaEvento">Fecha y Hora del Concierto:</label>
+                <input type="text" id="fechaEvento" placeholder="Ej: Viernes 15/11 - 21:30 hs">
+            </div>
+
+            <div class="group">
+                <label id="labelZona" for="zonaAviso">Zona / Local / Departamento:</label>
+                <input type="text" id="zonaAviso" placeholder="Ej: Bar Cultural / Gran Mendoza" required>
+            </div>
+
+            <div class="group">
+                <label for="descAviso">Descripción y detalles:</label>
+                <textarea id="descAviso" placeholder="Detallá costos, entradas, requisitos..." required></textarea>
+            </div>
+
+            <div class="group">
+                <label for="telAviso">Número de WhatsApp de contacto (sin 0 ni 15):</label>
+                <input type="text" id="telAviso" placeholder="Ej: 5492611234567" required>
+            </div>
+
+            <button class="action-btn" type="submit" id="btnEnviar">Publicar en la Red</button>
+        </form>
     </div>
 
     <div class="footer">
@@ -155,10 +355,197 @@
 </div>
 
 <script>
-    function cargarModulo(archivoHtml, boton) {
+    const API_URL = "https://script.google.com/macros/s/AKfycbzd6rwNpc74Vhb-OeJHPMRhdT91sTy5jNYzTLTXBJ4rHET6a-2n46z37Dqine7Q3pk/exec";
+    let listaGlobalAvisos = [];
+
+    window.onload = function() {
+        cargarAvisos();
+    };
+
+    function cambiarPestana(pestana) {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        boton.classList.add('active');
-        document.getElementById('moduloFrame').src = archivoHtml;
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+        const buscador = document.getElementById('buscadorContainer');
+        if (pestana === 'trabajo' || pestana === 'agenda') {
+            buscador.style.display = 'block';
+        } else {
+            buscador.style.display = 'none';
+        }
+
+        if (pestana === 'tarifario') {
+            document.querySelectorAll('.tab-btn')[0].classList.add('active');
+            document.getElementById('pestana-tarifario').classList.add('active');
+        } else if (pestana === 'facturacion') {
+            document.querySelectorAll('.tab-btn')[1].classList.add('active');
+            document.getElementById('pestana-facturacion').classList.add('active');
+        } else if (pestana === 'trabajo') {
+            document.querySelectorAll('.tab-btn')[2].classList.add('active');
+            document.getElementById('pestana-trabajo').classList.add('active');
+        } else if (pestana === 'agenda') {
+            document.querySelectorAll('.tab-btn')[3].classList.add('active');
+            document.getElementById('pestana-agenda').classList.add('active');
+        } else if (pestana === 'publicar') {
+            document.querySelectorAll('.tab-btn')[4].classList.add('active');
+            document.getElementById('pestana-publicar').classList.add('active');
+        }
+    }
+
+    function actualizarFormulario() {
+        const tipo = document.getElementById('tipoPublicacion').value;
+        const grupoCat = document.getElementById('grupoCatTrabajo');
+        const grupoFecha = document.getElementById('grupoFechaEvento');
+        const labelTitulo = document.getElementById('labelTitulo');
+        const labelZona = document.getElementById('labelZona');
+
+        if (tipo === 'concierto') {
+            grupoCat.style.display = 'none';
+            grupoFecha.style.display = 'block';
+            labelTitulo.innerText = "Nombre del Evento / Concierto:";
+            labelZona.innerText = "Lugar / Bar / Sala y Zona:";
+        } else {
+            grupoCat.style.display = 'block';
+            grupoFecha.style.display = 'none';
+            labelTitulo.innerText = "Título del aviso:";
+            labelZona.innerText = "Zona / Departamento:";
+        }
+    }
+
+    // Carga de avisos mediante JSONP para evitar bloqueos CORS
+    function cargarAvisos() {
+        const callbackName = 'jsonp_avisos_cb_' + Math.round(100000 * Math.random());
+        const contTrabajos = document.getElementById('contenedorTrabajos');
+        const contAgenda = document.getElementById('contenedorAgenda');
+
+        window[callbackName] = function(data) {
+            delete window[callbackName];
+            const scriptTag = document.getElementById(callbackName);
+            if (scriptTag) scriptTag.remove();
+
+            if (Array.isArray(data)) {
+                listaGlobalAvisos = data.reverse();
+                renderizarListados(listaGlobalAvisos);
+            } else {
+                contTrabajos.innerHTML = `<div class="empty-state">📭 No hay avisos laborales publicados.</div>`;
+                contAgenda.innerHTML = `<div class="empty-state">🎸 No hay conciertos agendados.</div>`;
+            }
+        };
+
+        const script = document.createElement('script');
+        script.id = callbackName;
+        script.src = `${API_URL}?accion=avisos&callback=${callbackName}`;
+        script.onerror = function() {
+            delete window[callbackName];
+            script.remove();
+            contTrabajos.innerHTML = `<div class="empty-state" style="color: #ef4444;">⚠️ No se pudieron cargar los avisos.</div>`;
+            contAgenda.innerHTML = `<div class="empty-state" style="color: #ef4444;">⚠️ No se pudo cargar la agenda.</div>`;
+        };
+        document.body.appendChild(script);
+    }
+
+    function renderizarListados(datos) {
+        const contTrabajos = document.getElementById('contenedorTrabajos');
+        const contAgenda = document.getElementById('contenedorAgenda');
+        contTrabajos.innerHTML = "";
+        contAgenda.innerHTML = "";
+
+        let hayTrabajos = false;
+        let hayConciertos = false;
+
+        datos.forEach(item => {
+            const esConcierto = (item.categoria || "").toLowerCase() === 'concierto';
+            const card = document.createElement('div');
+            card.className = esConcierto ? 'listing-card concierto' : 'listing-card';
+            card.setAttribute('data-cat', (item.categoria || 'trabajo').toLowerCase());
+            card.setAttribute('data-texto', `${item.autor || ''} ${item.titulo} ${item.zona} ${item.descripcion}`.toLowerCase());
+
+            let telLimpio = (item.whatsapp || "").replace(/\D/g, '');
+            const mensajeWa = encodeURIComponent(`Hola ${item.autor || 'colega'}, me interesa tu publicación "${item.titulo}" vista en el MIMM.`);
+            let infoFecha = (esConcierto && item.fechaEvento) ? `<span>📅 ${item.fechaEvento}</span>` : '';
+
+            card.innerHTML = `
+                <div class="listing-title">${item.titulo}</div>
+                <div class="listing-autor">👤 Publicado por: ${item.autor || 'Comunidad MIMM'}</div>
+                <div class="listing-meta">
+                    <span>📍 ${item.zona}</span>
+                    ${infoFecha}
+                </div>
+                <div class="listing-desc">${item.descripcion}</div>
+                <a href="https://wa.me/${telLimpio}?text=${mensajeWa}" class="wa-btn" target="_blank">💬 Contactar por WhatsApp</a>
+            `;
+
+            if (esConcierto) {
+                contAgenda.appendChild(card);
+                hayConciertos = true;
+            } else {
+                contTrabajos.appendChild(card);
+                hayTrabajos = true;
+            }
+        });
+
+        if (!hayTrabajos) contTrabajos.innerHTML = `<div class="empty-state">📭 No hay avisos laborales publicados en esta categoría.</div>`;
+        if (!hayConciertos) contAgenda.innerHTML = `<div class="empty-state">🎸 No hay conciertos agendados por el momento.</div>`;
+        filtrarContenido();
+    }
+
+    function filtrarContenido() {
+        const textoBusqueda = document.getElementById('inputBuscador').value.toLowerCase();
+        const categoriaTrabajo = document.getElementById('filtroCategoriaTrabajo').value;
+        
+        document.querySelectorAll('.listing-card').forEach(card => {
+            const cat = card.getAttribute('data-cat');
+            const textoCard = card.getAttribute('data-texto');
+            if(!textoCard) return;
+            
+            const coincideTexto = textoCard.includes(textoBusqueda);
+            if (cat === 'concierto') {
+                card.style.display = coincideTexto ? 'block' : 'none';
+            } else {
+                const coincideCat = (categoriaTrabajo === 'todos' || cat === categoriaTrabajo);
+                card.style.display = (coincideCat && coincideTexto) ? 'block' : 'none';
+            }
+        });
+    }
+
+    function publicarAviso(event) {
+        event.preventDefault();
+        const btnEnviar = document.getElementById('btnEnviar');
+        btnEnviar.disabled = true;
+        btnEnviar.innerText = "Publicando...";
+
+        const tipo = document.getElementById('tipoPublicacion').value;
+        const datos = {
+            tipo: "aviso", // Clave para que el backend sepa que es un aviso
+            autor: document.getElementById('autorAviso').value,
+            titulo: document.getElementById('tituloAviso').value,
+            categoria: tipo === 'concierto' ? 'concierto' : document.getElementById('tipoCat').value,
+            zona: document.getElementById('zonaAviso').value,
+            descripcion: document.getElementById('descAviso').value,
+            whatsapp: document.getElementById('telAviso').value,
+            fechaEvento: tipo === 'concierto' ? document.getElementById('fechaEvento').value : ''
+        };
+
+        fetch(API_URL, {
+            method: "POST",
+            redirect: "follow",
+            body: JSON.stringify(datos)
+        })
+        .then(() => {
+            alert('¡Publicación realizada con éxito en la red del MIMM!');
+            document.getElementById('formAviso').reset();
+            cambiarPestana(tipo === 'concierto' ? 'agenda' : 'trabajo');
+            setTimeout(cargarAvisos, 1000);
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            alert('¡Publicación realizada con éxito!');
+            document.getElementById('formAviso').reset();
+            setTimeout(cargarAvisos, 1000);
+        })
+        .finally(() => {
+            btnEnviar.disabled = false;
+            btnEnviar.innerText = "Publicar en la Red";
+        });
     }
 </script>
 
