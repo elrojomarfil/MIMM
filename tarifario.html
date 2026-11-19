@@ -2,8 +2,8 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
     <!-- ETIQUETAS DE VISTA PREVIA PARA WHATSAPP Y REDES -->
     <meta property="og:title" content="Tarifario MIMM">
     <meta property="og:description" content="Los valores del tarifario son de referencia sugeridos por el MIMM y construidos con la unidad de referencia.">
@@ -13,270 +13,22 @@
 
     <title>Calculadora MIMM - Tarifario Oficial UF</title>
 
-    <!-- Importación exclusiva de Urbanist -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@500;600;700&display=swap" rel="stylesheet">
-
-    <style>
-        :root {
-            --bg-deep: #09090b;
-            --card-bg: rgba(24, 24, 27, 0.75); /* Efecto vidrio esmerilado oscuro */
-            --card-border: rgba(255, 255, 255, 0.1);
-            --primary-red: #ef4444;
-            --hover-red: #dc2626;
-            --accent-yellow: #facc15;
-            --text-light: #f4f4f5;
-            --text-muted: #a1a1aa;
-            --input-bg: rgba(9, 9, 11, 0.6);
-            --radius: 16px;
-        }
-
-        body {
-            font-family: 'Urbanist', sans-serif, system-ui;
-            background-color: var(--bg-deep);
-            background-image: 
-                radial-gradient(circle at 10% 20%, rgba(239, 68, 68, 0.12) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(250, 204, 21, 0.08) 0%, transparent 40%);
-            color: var(--text-light);
-            margin: 0;
-            padding: 20px;
-            min-height: 100vh;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        .container {
-            max-width: 620px;
-            margin: 20px auto;
-            background: var(--card-bg);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--card-border);
-            padding: 32px;
-            border-radius: var(--radius);
-            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7);
-            transition: all 0.3s ease;
-        }
-
-        .header-logo {
-            text-align: center;
-            margin-bottom: 14px;
-        }
-        .header-logo img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
-        }
-
-        .subtitle {
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            margin-bottom: 22px;
-            padding-bottom: 16px;
-            border-bottom: 2px solid var(--primary-red);
-        }
-
-        /* Sistema de pestañas */
-        .tabs {
-            display: flex;
-            gap: 4px;
-            margin-bottom: 22px;
-            background: rgba(0, 0, 0, 0.4);
-            padding: 5px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        .tab-btn {
-            flex: 1;
-            padding: 11px 6px;
-            border: none;
-            background: transparent;
-            font-weight: 700;
-            font-size: 0.85rem;
-            font-family: 'Urbanist', sans-serif;
-            color: var(--text-muted);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: none;
-            width: auto;
-        }
-        .tab-btn:hover {
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--text-light);
-            transform: none;
-            box-shadow: none;
-        }
-        .tab-btn.active {
-            background: var(--primary-red);
-            color: white;
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-        }
-        .tab-content {
-            display: none;
-        }
-        .tab-content.active {
-            display: block;
-        }
-
-        .group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 8px;
-            font-size: 15px;
-            color: var(--text-light);
-        }
-
-        select, input[type="number"] {
-            width: 100%;
-            padding: 14px;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 10px;
-            box-sizing: border-box;
-            font-size: 15px;
-            font-family: 'Urbanist', sans-serif;
-            background-color: var(--input-bg);
-            color: var(--text-light);
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-        select:focus, input[type="number"]:focus {
-            outline: none;
-            border-color: var(--accent-yellow);
-            box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.2);
-        }
-        select option, select optgroup {
-            background: #18181b;
-            color: #f4f4f5;
-        }
-        select optgroup {
-            color: var(--accent-yellow);
-            font-weight: 700;
-        }
-
-        /* Panel informativo fijo de la UF */
-        .uf-info-box {
-            background: rgba(9, 9, 11, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-left: 5px solid var(--accent-yellow);
-            padding: 18px;
-            border-radius: 10px;
-            margin-bottom: 22px;
-        }
-        .uf-title {
-            font-weight: 700;
-            color: var(--text-light);
-            font-size: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-bottom: 10px;
-        }
-        .uf-value {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--accent-yellow);
-        }
-        .uf-explanation {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            line-height: 1.5;
-            margin: 0;
-        }
-
-        .checkbox-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        .checkbox-row input {
-            width: 18px;
-            height: 18px;
-            flex-shrink: 0;
-            accent-color: var(--primary-red);
-            cursor: pointer;
-        }
-        .checkbox-row label {
-            margin-bottom: 0;
-            font-weight: 500;
-            font-size: 14px;
-            line-height: 1.3;
-            color: var(--text-light);
-            cursor: pointer;
-        }
-
-        /* Botón principal en Rojo con hover dinámico */
-        button.calc-btn {
-            width: 100%;
-            background-color: var(--primary-red);
-            color: white;
-            border: none;
-            padding: 14px 20px;
-            border-radius: 10px;
-            font-weight: 700;
-            font-family: 'Urbanist', sans-serif;
-            font-size: 16px;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: background-color 0.2s, transform 0.15s, box-shadow 0.15s;
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-        }
-        button.calc-btn:hover {
-            background-color: var(--hover-red);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(239, 68, 68, 0.5);
-        }
-        button.calc-btn:active {
-            transform: translateY(0);
-        }
-
-        .result {
-            margin-top: 22px;
-            background: rgba(250, 204, 21, 0.08);
-            border: 1px solid rgba(250, 204, 21, 0.3);
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-        }
-        .result h3 {
-            margin: 0 0 6px 0;
-            color: var(--text-light);
-            font-size: 1.05rem;
-            font-weight: 700;
-        }
-        .price {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--accent-yellow);
-            margin: 6px 0;
-        }
-        .info {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-top: 10px;
-            line-height: 1.5;
-        }
-
-        .footer {
-            text-align: center;
-            margin-top: 24px;
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
-    </style>
+    <meta name="theme-color" content="#09090b">
+    <link rel="stylesheet" href="mimm.css">
 </head>
 <body>
 
-<div class="container">
+<header class="topbar">
+    <div class="topbar-inner">
+        <button class="back-btn" id="btnBack" type="button" aria-label="Volver">←</button>
+        <div class="topbar-title">💰 Tarifario</div>
+    </div>
+</header>
+
+<main class="page">
     <!-- Imagen institucional en el encabezado -->
     <div class="header-logo">
         <img src="miniatura.png" alt="MIMM - Tarifario Oficial">
@@ -295,7 +47,7 @@
     </div>
 
     <!-- Botones de Pestañas -->
-    <div class="tabs">
+    <div class="seg">
         <button class="tab-btn active" type="button" onclick="cambiarPestana('vivo')">🎸 Música en Vivo</button>
         <button class="tab-btn" type="button" onclick="cambiarPestana('estudio')">🎼 Trabajos no escénicos</button>
     </div>
@@ -337,7 +89,7 @@
             </div>
         </div>
 
-        <button class="calc-btn" type="button" onclick="calcularVivo()">Calcular Honorario en Vivo</button>
+        <button class="btn calc-btn" type="button" onclick="calcularVivo()">Calcular Honorario en Vivo</button>
     </div>
 
     <!-- PESTAÑA 2: TRABAJOS NO ESCÉNICOS -->
@@ -363,7 +115,7 @@
             <input type="number" id="cantEstudio" value="1" min="1" max="50">
         </div>
 
-        <button class="calc-btn" type="button" onclick="calcularEstudio()">Calcular Honorario Trabajos no escénicos</button>
+        <button class="btn calc-btn" type="button" onclick="calcularEstudio()">Calcular Honorario Trabajos no escénicos</button>
     </div>
 
     <!-- Resultados -->
@@ -373,11 +125,12 @@
         <div class="info" id="txtDetalle"></div>
     </div>
 
-    <div class="footer">
-        Movimiento Independiente de Músicos de Mendoza (MIMM)
-    </div>
-</div>
+    <div class="footer">Movimiento Independiente de Músicos de Mendoza (MIMM)</div>
+</main>
 
+<nav class="bottom-nav" id="bottomNav"></nav>
+
+<script src="mimm.js"></script>
 <script>
     // Valor Fijo Institucional de 1 Unidad Fija MIMM (Derivado de CBT / DEIE)
     const VALOR_UF = 2903.35;
@@ -481,6 +234,7 @@
     function mostrarResultado(total, totalUf, extras) {
         const resBox = document.getElementById('cajaResultado');
         resBox.style.display = 'block';
+        resBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         document.getElementById('txtTotal').innerText = '$ ' + Math.round(total).toLocaleString('es-AR');
 
         let detalle = `Equivalente a ${totalUf} UF-MIMM calculadas a $${VALOR_UF.toLocaleString('es-AR', {minimumFractionDigits: 2})} c/u (Base DEIE/CBT).`;
@@ -490,6 +244,5 @@
         document.getElementById('txtDetalle').innerText = detalle;
     }
 </script>
-
 </body>
 </html>
