@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>MIMM - Bolsa de trabajo</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@500;600;700&display=swap" rel="stylesheet">
+    <meta name="theme-color" content="#09090b">
+    <link rel="stylesheet" href="mimm.css">
+</head>
+<body>
+
+<header class="topbar">
+    <div class="topbar-inner">
+        <button class="back-btn" id="btnBack" type="button" aria-label="Volver">←</button>
+        <div class="topbar-title">📋 Bolsa de trabajo</div>
+    </div>
+</header>
+
+<main class="page">
+    <div class="search-container">
+        <input type="search" id="inputBuscador" placeholder="🔍 Buscar por nombre, banda o zona...">
+    </div>
+
+    <div class="group">
+        <label for="filtroCategoriaTrabajo">Filtrar categoría laboral:</label>
+        <select id="filtroCategoriaTrabajo">
+            <option value="todos">Todas las categorías</option>
+            <option value="banda">Buscan Músico / Integrante</option>
+            <option value="sesionista">Sesionistas y Grabación</option>
+            <option value="tecnico">Técnicos / Sonido / Iluminación</option>
+            <option value="ofrezco">Ofrezco Servicios / Clases</option>
+        </select>
+    </div>
+
+    <div id="contenedor"><div class="loading-state">🔄 Conectando con la base de datos...</div></div>
+
+    <div class="refresh-row">
+        <button class="btn btn-secondary btn-sm" id="btnActualizar" type="button">↻ Actualizar</button>
+    </div>
+
+    <div class="footer">Movimiento Independiente de Músicos de Mendoza (MIMM)</div>
+</main>
+
+<nav class="bottom-nav" id="bottomNav"></nav>
+
+<script src="mimm.js"></script>
+<script>
+    let lista = [];
+    const cont = document.getElementById('contenedor');
+
+    function render() {
+        const texto = document.getElementById('inputBuscador').value.toLowerCase().trim();
+        const cat = document.getElementById('filtroCategoriaTrabajo').value;
+        const trabajos = lista.filter(i => String(i.categoria || 'trabajo').toLowerCase().trim() !== 'concierto');
+
+        if (trabajos.length === 0) {
+            cont.innerHTML = '<div class="empty-state">📭 No hay avisos laborales publicados.</div>';
+            return;
+        }
+
+        const visibles = trabajos.filter(i => {
+            const c = String(i.categoria || 'trabajo').toLowerCase().trim();
+            return (cat === 'todos' || c === cat) && MIMM.textoBusqueda(i).includes(texto);
+        });
+
+        cont.innerHTML = '';
+        if (visibles.length === 0) {
+            cont.innerHTML = '<div class="empty-state">📭 No hay avisos que coincidan con tu búsqueda.</div>';
+            return;
+        }
+        visibles.forEach(i => cont.appendChild(MIMM.tarjetaAviso(i)));
+    }
+
+    function cargar(forzar) {
+        cont.innerHTML = '<div class="loading-state">🔄 Conectando con la base de datos...</div>';
+        MIMM.getAvisos(forzar)
+            .then(d => { lista = d; render(); })
+            .catch(() => { cont.innerHTML = '<div class="empty-state error">⚠️ No se pudieron cargar los avisos.</div>'; });
+    }
+
+    document.getElementById('inputBuscador').addEventListener('input', render);
+    document.getElementById('filtroCategoriaTrabajo').addEventListener('change', render);
+    document.getElementById('btnActualizar').addEventListener('click', () => cargar(true));
+
+    cargar(false);
+</script>
+</body>
+</html>

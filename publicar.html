@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>MIMM - Publicar</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@500;600;700&display=swap" rel="stylesheet">
+    <meta name="theme-color" content="#09090b">
+    <link rel="stylesheet" href="mimm.css">
+</head>
+<body>
+
+<header class="topbar">
+    <div class="topbar-inner">
+        <button class="back-btn" id="btnBack" type="button" aria-label="Volver">←</button>
+        <div class="topbar-title">➕ Publicar</div>
+    </div>
+</header>
+
+<main class="page">
+    <form id="formAviso">
+        <div class="group">
+            <label for="tipoPublicacion">¿Qué querés publicar?:</label>
+            <select id="tipoPublicacion" required>
+                <option value="trabajo">Bolsa de Trabajo / Servicio</option>
+                <option value="concierto">Concierto / Evento en Vivo</option>
+            </select>
+        </div>
+
+        <div class="group">
+            <label for="autorAviso">Tu Nombre / Artista o Banda:</label>
+            <input type="text" id="autorAviso" placeholder="Ej: Juan Pérez / Trío Los Cumpas" required>
+        </div>
+
+        <div class="group">
+            <label id="labelTitulo" for="tituloAviso">Título del aviso:</label>
+            <input type="text" id="tituloAviso" placeholder="Ej: Busco bajista / Presentación de disco" required>
+        </div>
+
+        <div class="group" id="grupoCatTrabajo">
+            <label for="tipoCat">Categoría laboral:</label>
+            <select id="tipoCat">
+                <option value="banda">Buscan Músico / Integrante</option>
+                <option value="sesionista">Sesionistas y Grabación</option>
+                <option value="tecnico">Técnicos / Sonido / Iluminación</option>
+                <option value="ofrezco">Ofrezco Servicios / Clases</option>
+            </select>
+        </div>
+
+        <div class="group" id="grupoFechaEvento" style="display: none;">
+            <label for="fechaEvento">Fecha y Hora del Concierto:</label>
+            <input type="text" id="fechaEvento" placeholder="Ej: Viernes 15/11 - 21:30 hs">
+        </div>
+
+        <div class="group">
+            <label id="labelZona" for="zonaAviso">Zona / Local / Departamento:</label>
+            <input type="text" id="zonaAviso" placeholder="Ej: Bar Cultural / Gran Mendoza" required>
+        </div>
+
+        <div class="group">
+            <label for="descAviso">Descripción y detalles:</label>
+            <textarea id="descAviso" placeholder="Detallá costos, entradas, requisitos..." required></textarea>
+        </div>
+
+        <div class="group">
+            <label for="telAviso">Número de WhatsApp de contacto (sin 0 ni 15):</label>
+            <input type="tel" id="telAviso" placeholder="Ej: 2611234567" required>
+        </div>
+
+        <button class="btn" type="submit" id="btnEnviar">Publicar en la Red</button>
+    </form>
+
+    <div class="footer">Movimiento Independiente de Músicos de Mendoza (MIMM)</div>
+</main>
+
+<nav class="bottom-nav" id="bottomNav"></nav>
+
+<script src="mimm.js"></script>
+<script>
+    function actualizarFormulario() {
+        const concierto = document.getElementById('tipoPublicacion').value === 'concierto';
+        document.getElementById('grupoCatTrabajo').style.display = concierto ? 'none' : 'block';
+        document.getElementById('grupoFechaEvento').style.display = concierto ? 'block' : 'none';
+        document.getElementById('labelTitulo').innerText = concierto ? "Nombre del Evento / Concierto:" : "Título del aviso:";
+        document.getElementById('labelZona').innerText = concierto ? "Lugar / Bar / Sala y Zona:" : "Zona / Departamento:";
+    }
+    document.getElementById('tipoPublicacion').addEventListener('change', actualizarFormulario);
+
+    document.getElementById('formAviso').addEventListener('submit', function (event) {
+        event.preventDefault();
+        const btn = document.getElementById('btnEnviar');
+        btn.disabled = true;
+        btn.innerText = "Publicando...";
+
+        const tipo = document.getElementById('tipoPublicacion').value;
+        const datos = {
+            tipo: "aviso",
+            autor: document.getElementById('autorAviso').value,
+            titulo: document.getElementById('tituloAviso').value,
+            categoria: tipo === 'concierto' ? 'concierto' : document.getElementById('tipoCat').value,
+            zona: document.getElementById('zonaAviso').value,
+            descripcion: document.getElementById('descAviso').value,
+            whatsapp: document.getElementById('telAviso').value,
+            fechaEvento: tipo === 'concierto' ? document.getElementById('fechaEvento').value : ''
+        };
+
+        // mode "no-cors": la petición se envía igual y evitamos el error CORS al leer la respuesta
+        fetch(MIMM.API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify(datos) })
+            .then(() => {
+                MIMM.limpiarCache();
+                MIMM.toast('¡Publicado en la red del MIMM!');
+                this.reset();
+                actualizarFormulario();
+                setTimeout(() => { location.replace(tipo === 'concierto' ? 'agenda.html' : 'bolsa.html'); }, 900);
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                MIMM.toast('No se pudo publicar. Revisá tu conexión e intentá de nuevo.');
+                btn.disabled = false;
+                btn.innerText = "Publicar en la Red";
+            });
+    });
+</script>
+</body>
+</html>

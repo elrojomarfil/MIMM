@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>MIMM - Agenda de conciertos</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@500;600;700&display=swap" rel="stylesheet">
+    <meta name="theme-color" content="#09090b">
+    <link rel="stylesheet" href="mimm.css">
+</head>
+<body>
+
+<header class="topbar">
+    <div class="topbar-inner">
+        <button class="back-btn" id="btnBack" type="button" aria-label="Volver">←</button>
+        <div class="topbar-title">🎸 Agenda</div>
+    </div>
+</header>
+
+<main class="page">
+    <div class="search-container">
+        <input type="search" id="inputBuscador" placeholder="🔍 Buscar por banda o lugar...">
+    </div>
+
+    <div id="contenedor"><div class="loading-state">🔄 Cargando agenda de conciertos...</div></div>
+
+    <div class="refresh-row">
+        <button class="btn btn-secondary btn-sm" id="btnActualizar" type="button">↻ Actualizar</button>
+    </div>
+
+    <div class="footer">Movimiento Independiente de Músicos de Mendoza (MIMM)</div>
+</main>
+
+<nav class="bottom-nav" id="bottomNav"></nav>
+
+<script src="mimm.js"></script>
+<script>
+    let lista = [];
+    const cont = document.getElementById('contenedor');
+
+    function render() {
+        const texto = document.getElementById('inputBuscador').value.toLowerCase().trim();
+        const conciertos = lista.filter(i => String(i.categoria || '').toLowerCase().trim() === 'concierto');
+
+        if (conciertos.length === 0) {
+            cont.innerHTML = '<div class="empty-state">🎸 No hay conciertos agendados por el momento.</div>';
+            return;
+        }
+
+        const visibles = conciertos.filter(i => MIMM.textoBusqueda(i).includes(texto));
+        cont.innerHTML = '';
+        if (visibles.length === 0) {
+            cont.innerHTML = '<div class="empty-state">🎸 No hay conciertos que coincidan con tu búsqueda.</div>';
+            return;
+        }
+        visibles.forEach(i => cont.appendChild(MIMM.tarjetaAviso(i)));
+    }
+
+    function cargar(forzar) {
+        cont.innerHTML = '<div class="loading-state">🔄 Cargando agenda de conciertos...</div>';
+        MIMM.getAvisos(forzar)
+            .then(d => { lista = d; render(); })
+            .catch(() => { cont.innerHTML = '<div class="empty-state error">⚠️ No se pudo cargar la agenda.</div>'; });
+    }
+
+    document.getElementById('inputBuscador').addEventListener('input', render);
+    document.getElementById('btnActualizar').addEventListener('click', () => cargar(true));
+
+    cargar(false);
+</script>
+</body>
+</html>
