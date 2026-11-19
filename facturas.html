@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>MIMM - Módulo de Facturación</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@500;600;700&display=swap" rel="stylesheet">
+    <meta name="theme-color" content="#09090b">
+    <link rel="stylesheet" href="mimm.css">
+</head>
+<body>
+
+<header class="topbar">
+    <div class="topbar-inner">
+        <button class="back-btn" id="btnBack" type="button" aria-label="Volver">←</button>
+        <div class="topbar-title">🧾 Facturación</div>
+    </div>
+</header>
+
+<main class="page">
+
+    <!-- PASO 1: Validación de Socio/a -->
+    <div id="auth-section">
+        <p style="margin-bottom: 22px;">Solo pueden facturar a través del MIMM las personas asociadas (socios/as con cuota al día).</p>
+        <div id="auth-error" class="alert hidden">DNI no encontrado o socio/a sin cuota al día.</div>
+        <div class="group">
+            <label for="dni-input">Ingresá tu Número de DNI:</label>
+            <input type="number" inputmode="numeric" id="dni-input" placeholder="Ej: 35123456">
+        </div>
+        <button class="btn" type="button" onclick="verificarSocio()">Continuar</button>
+    </div>
+
+    <!-- PASO 2: Panel de Facturación -->
+    <div id="app-section" class="hidden">
+        <div class="session-bar">
+            <span id="socio-welcome"></span>
+            <button class="btn btn-secondary btn-sm" type="button" onclick="cerrarSesion()">Salir</button>
+        </div>
+
+        <h3 class="section-title">Solicitar Factura</h3>
+
+        <form id="form-google" method="POST" target="hidden_iframe" onsubmit="procesarEnvioLocal(event)">
+            <input type="hidden" name="dni" id="hidden-dni">
+
+            <div class="group">
+                <label for="fac-nombre">Nombre y Apellido del socio/a:</label>
+                <input type="text" name="nombre" id="fac-nombre" placeholder="Ej: Juan Pérez" required>
+            </div>
+
+            <div class="group">
+                <label for="fac-cuit">CUIT/CUIL de la persona o institución destinataria:</label>
+                <input type="text" name="cuit" id="fac-cuit" placeholder="Ej: 30-71111111-9" required>
+            </div>
+
+            <div class="group">
+                <label for="fac-detalle">Detalle de facturación (Trabajo realizado, lugar, fecha, expte., etc.):</label>
+                <textarea name="detalle" id="fac-detalle" placeholder="Ej: Honorarios por show en vivo..." required></textarea>
+            </div>
+
+            <div class="group">
+                <label for="fac-monto">Monto total a facturar ($):</label>
+                <input type="number" inputmode="decimal" name="monto" id="fac-monto" placeholder="Ej: 50000" required>
+            </div>
+
+            <div class="group">
+                <label for="fac-correo">Correo electrónico donde debe ser enviada la factura:</label>
+                <input type="email" name="correo" id="fac-correo" placeholder="Ej: dependencia@solicitante.com" required>
+            </div>
+
+            <button class="btn" type="submit">Enviar Solicitud</button>
+        </form>
+
+        <!-- Receptor invisible del envío del formulario (no se ve en pantalla) -->
+        <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;" title="Envío de formulario"></iframe>
+
+        <hr>
+
+        <div class="history-head">
+            <h3 class="section-title">Mis Solicitudes y Estados</h3>
+            <div class="history-actions">
+                <button class="btn btn-warning btn-sm" type="button" onclick="sincronizarHistorial()">Actualizar Estados</button>
+                <button class="btn btn-secondary btn-sm" type="button" onclick="limpiarHistorial()" style="color: #fca5a5;" title="Borrar historial local">Borrar</button>
+            </div>
+        </div>
+        <div id="historial-lista"><p>Cargando solicitudes...</p></div>
+    </div>
+
+    <div class="footer">Movimiento Independiente de Músicos de Mendoza (MIMM)</div>
+</main>
+
+<nav class="bottom-nav" id="bottomNav"></nav>
+
+<script src="mimm.js"></script>
+<script>
+    let dniActual = "";
+    const sociosValidos = ["12345678", "35123456", "40999888"];
+
+    // La URL del script se toma del archivo compartido (mimm.js)
+    document.getElementById("form-google").action = MIMM.API_URL;
+
+    function verificarSocio() {
+        const dni = document.getElementById("dni-input").value.trim();
+        const errorBox = document.getElementById("auth-error");
+
+        if (sociosValidos.includes(dni)) {
+            dniActual = dni;
+            document.getElementById("hidden-dni").value = dni;
+            errorBox.classList.add("hidden");
+            document.getElementById("auth-section").classList.add("hidden");
+            document.getElementById("app-section").classList.remove("hidden");
+            document.getElementById("socio-welcome").innerText = `Socio/a DNI: ${dni}`;
+            sincronizarHistorial();
+        } else {
+            errorBox.classList.remove("hidden");
+        }
+    }
+
+    function cerrarSesion() {
+        dniActual = "";
+        document.getElementById("app-section").classList.add("hidden");
+        document.getElementById("auth-section").classList.remove("hidden");
+        document.getElementById("dni-input").value = "";
+        document.getElementById("fac-nombre").value = "";
+    }
+
+    function procesarEnvioLocal(event) {
+        const nuevaFactura = {
+            nombre: document.getElementById("fac-nombre").value.trim(),
+            dni: dniActual,
+            cuit: document.getElementById("fac-cuit").value.trim(),
+            detalle: document.getElementById("fac-detalle").value.trim(),
+            monto: document.getElementById("fac-monto").value.trim(),
+            correo: document.getElementById("fac-correo").value.trim(),
+            fecha: new Date().toLocaleDateString(),
+            estado: "Pendiente de emisión 🟡"
+        };
+
+        let misFacturas = JSON.parse(localStorage.getItem("mimm_facturas_" + dniActual)) || [];
+        misFacturas.push(nuevaFactura);
+        localStorage.setItem("mimm_facturas_" + dniActual, JSON.stringify(misFacturas));
+
+        setTimeout(() => {
+            document.getElementById("fac-cuit").value = "";
+            document.getElementById("fac-detalle").value = "";
+            document.getElementById("fac-monto").value = "";
+            document.getElementById("fac-correo").value = "";
+            MIMM.toast("¡Solicitud registrada con éxito!");
+            sincronizarHistorial();
+        }, 800);
+    }
+
+    function sincronizarHistorial() {
+        const contenedor = document.getElementById("historial-lista");
+        contenedor.innerHTML = "<p>Sincronizando con la planilla...</p>";
+
+        MIMM.jsonp({ dni: dniActual })
+            .then(data => {
+                if (!Array.isArray(data) || data.length === 0) {
+                    const locales = JSON.parse(localStorage.getItem("mimm_facturas_" + dniActual)) || [];
+                    if (locales.length > 0) {
+                        renderizarLista(locales);
+                    } else {
+                        contenedor.innerHTML = "<p>No tenés solicitudes registradas.</p>";
+                    }
+                    return;
+                }
+                localStorage.setItem("mimm_facturas_" + dniActual, JSON.stringify(data));
+                renderizarLista(data);
+            })
+            .catch(() => {
+                renderizarLista(JSON.parse(localStorage.getItem("mimm_facturas_" + dniActual)) || []);
+            });
+    }
+
+    function limpiarHistorial() {
+        if (confirm("¿Estás seguro de borrar el historial guardado en este dispositivo?")) {
+            localStorage.removeItem("mimm_facturas_" + dniActual);
+            document.getElementById("historial-lista").innerHTML = "<p>No tenés solicitudes registradas.</p>";
+        }
+    }
+
+    function renderizarLista(facturas) {
+        const contenedor = document.getElementById("historial-lista");
+        if (!facturas || facturas.length === 0) {
+            contenedor.innerHTML = "<p>No tenés solicitudes registradas.</p>";
+            return;
+        }
+
+        const esc = MIMM.esc;
+        contenedor.innerHTML = [...facturas].reverse().map(fac => {
+            const estadoStr = (fac.estado || "").toLowerCase();
+            const esEmitida = estadoStr.includes("emitid") || estadoStr.includes("aprob");
+            const claseEstado = esEmitida ? "badge-emitida" : "badge-pendiente";
+            return `
+                <div class="history-card">
+                    <strong style="color: var(--accent-yellow);">Socio/a:</strong> ${esc(fac.nombre)} (DNI: ${esc(fac.dni)})<br>
+                    <strong>Destinatario (CUIT):</strong> ${esc(fac.cuit)}<br>
+                    <strong>Detalle:</strong> ${esc(fac.detalle)}<br>
+                    <strong>Monto:</strong> <span style="color: var(--accent-yellow); font-weight:700;">$${esc(fac.monto)}</span><br>
+                    <strong>Enviar a:</strong> ${esc(fac.correo)}<br>
+                    <strong>Fecha:</strong> ${esc(fac.fecha)}<br>
+                    <strong>Estado:</strong> <span class="${claseEstado}">${esc(fac.estado)}</span>
+                </div>`;
+        }).join("");
+    }
+</script>
+</body>
+</html>
